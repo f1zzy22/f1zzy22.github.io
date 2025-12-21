@@ -7,20 +7,19 @@
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <div class="static-noise layer-1"></div>
-  <div class="static-noise layer-2"></div>
+<body class="loading">
   <div class="grid-bg"></div>
 
   <nav class="nav">
     <div class="nav-container">
       <div class="nav-logo nav-glitch" data-text="&gt; Daniel Han">&gt; Daniel Han</div>
+      
       <div class="nav-links">
-        <a href="#about">About</a>
-        <a href="#education">Education</a>
-        <a href="#experience">Experience</a>
-        <a href="#blog">Blog</a>
-        <a href="#contact">Contact</a>
+        <a href="#about" class="hacker-text" data-value="About">About</a>
+        <a href="#education" class="hacker-text" data-value="Education">Education</a>
+        <a href="#experience" class="hacker-text" data-value="Experience">Experience</a>
+        <a href="#blog" class="hacker-text" data-value="Blog">Blog</a>
+        <a href="#contact" class="hacker-text" data-value="Contact">Contact</a>
       </div>
     </div>
   </nav>
@@ -47,13 +46,13 @@
 
   <section id="about" class="section">
     <div class="container">
-      <h2 class="section-title">&gt; whoami</h2>
+      <h2 class="section-title hacker-text" data-value="&gt; whoami">&gt; whoami</h2>
       <div class="about-content">
         <p class="about-text">
           Hi, I'm Daniel!
           I'm currently speedrunning a BA + MS in Cyber Security Engineering at the University of Southern California, with a minor in Data Science.
           <br><br>
-          I like hacking things (ethically), solving problems, and diving deep into security rabbit holes. Between CTFs and teaching cybersecurity to high schoolers, I'm always learning something new.
+          I like hacking things (ethically), solving problems, and diving deep into security rabbit holes. Between CTF's and teaching cybersecurity to high schoolers, I'm always learning something new.
           <br><br>
           Outside of security, you can find me listening to Gracie Abrams, playing pickleball, or rating eats around the city.
         </p>
@@ -64,7 +63,7 @@
 
   <section id="education" class="section">
     <div class="container">
-      <h2 class="section-title">&gt; education_log</h2>
+      <h2 class="section-title hacker-text" data-value="&gt; education_log">&gt; education_log</h2>
       
       <div class="education-container">
         <div class="uni-header">
@@ -122,7 +121,7 @@
 
   <section id="experience" class="section">
     <div class="container">
-      <h2 class="section-title">&gt; experience_timeline</h2>
+      <h2 class="section-title hacker-text" data-value="&gt; experience_timeline">&gt; experience_timeline</h2>
       
       <div class="experience-grid">
         
@@ -208,7 +207,7 @@
 
   <section id="blog" class="section">
     <div class="container">
-      <h2 class="section-title">&gt; recent_posts</h2>
+      <h2 class="section-title hacker-text" data-value="&gt; recent_posts">&gt; recent_posts</h2>
       <div style="text-align: center; color: var(--text-secondary); padding: 3rem; border: 1px dashed var(--border); background: var(--bg-secondary);">
         <p style="font-size: 1.2rem; color: var(--accent);">// COMING SOON</p>
         <p style="margin-top: 10px;">Check back later for potential write-ups on CTFs, security research, or whatever's on my mind.</p>
@@ -218,7 +217,7 @@
 
   <section id="contact" class="section">
     <div class="container">
-      <h2 class="section-title">&gt; contact</h2>
+      <h2 class="section-title hacker-text" data-value="&gt; contact">&gt; contact</h2>
       <div class="contact-content">
         <div class="contact-links">
           <a href="mailto:dhan6609@usc.edu" class="contact-link">

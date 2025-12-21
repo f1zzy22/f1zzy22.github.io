@@ -26,34 +26,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* --- BACKGROUND NOISE --- */
-.static-noise {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0;
-  mix-blend-mode: hard-light;
-  animation: noiseFlicker 0.1s infinite, glitchSkew 0.3s infinite steps(2);
-}
-
-@keyframes noiseFlicker {
-  0% { background-position: 0 0; }
-  100% { background-position: 100px 100px; }
-}
-
-@keyframes glitchSkew {
-  0% { transform: skew(0deg) translateX(0); }
-  25% { transform: skew(5deg) translateX(2px); }
-  50% { transform: skew(-5deg) translateX(-2px); }
-  75% { transform: skew(2deg) translateX(1px); }
-  100% { transform: skew(0deg) translateX(0); }
-}
-
+/* --- BACKGROUND GRID --- */
 .grid-bg {
   position: fixed;
   top: 0;
@@ -85,6 +58,7 @@ html {
   margin-bottom: 2rem;
   position: relative;
   display: inline-block;
+  cursor: default;
 }
 
 .section-title::after {
@@ -110,6 +84,10 @@ html {
   height: 60px;
   display: flex;
   align-items: center;
+  
+  /* Transition for the fade-in effect */
+  opacity: 1;
+  transition: opacity 0.5s ease;
 }
 
 .nav-container {
@@ -127,6 +105,7 @@ html {
   font-weight: 700;
   color: var(--accent);
   position: relative;
+  cursor: pointer;
 }
 
 /* NAV GLITCH EFFECT */
@@ -158,6 +137,12 @@ html {
   animation: glitch-2 4s infinite linear alternate-reverse;
 }
 
+/* Hacker Text Base Style */
+.hacker-text {
+  font-family: "JetBrains Mono", monospace;
+  cursor: pointer;
+}
+
 .nav-links {
   display: flex;
   gap: 1.5rem;
@@ -186,27 +171,24 @@ html {
   padding: 0 2rem;
 }
 
-/* TERMINAL WINDOW STYLING */
+/* TERMINAL WINDOW */
 .terminal-window {
   width: 100%;
   max-width: 800px;
-  background-color: #0d0d0d;
+  background-color: #0a0a0a; 
   border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border-radius: 6px; 
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); 
   font-family: "JetBrains Mono", monospace;
-  font-size: 0.85rem;
-  
-  /* CENTERING FIX */
+  font-size: 0.9rem; 
   margin: 0 auto 2rem auto; 
-  
   overflow: hidden;
   text-align: left;
 }
 
 .terminal-header {
-  background-color: #1a1a1a;
-  padding: 10px 15px;
+  background-color: #161616;
+  padding: 12px 15px;
   display: flex;
   gap: 8px;
   border-bottom: 1px solid var(--border);
@@ -216,6 +198,7 @@ html {
   width: 12px;
   height: 12px;
   border-radius: 50%;
+  opacity: 0.8;
 }
 
 .red { background-color: #ff5f56; }
@@ -223,29 +206,27 @@ html {
 .green { background-color: #27c93f; }
 
 .terminal-body {
-  padding: 15px;
+  padding: 20px;
   min-height: 140px; 
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.6;
   overflow-x: auto;
 }
 
 /* Command Output Colors */
 .cmd-user { color: var(--accent); font-weight: bold; }
 .cmd-path { color: var(--accent-blue); }
-.cmd-input { color: #e0e0e0; }
+.cmd-input { color: #ffffff; } 
 .cmd-error { color: #ff5f56; }
 
-/* ASCII ART STYLING (Injected by JS) */
+/* ASCII ART STYLING */
 .terminal-ascii {
   color: var(--accent);
   font-weight: bold;
   font-family: "Courier New", Courier, monospace;
   white-space: pre; 
   line-height: 1;
-  margin-top: 1rem;
-  
-  /* Responsive sizing */
+  margin-top: 1.5rem;
   font-size: 6px; 
 }
 
@@ -255,12 +236,23 @@ html {
   }
 }
 
-/* About Section */
+/* BLINKING CURSOR */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cmd-input:last-child::after {
+  content: '▋';
+  color: var(--accent);
+  margin-left: 5px;
+  animation: blink 1s infinite;
+  vertical-align: middle;
+}
+
+/* --- ABOUT SECTION --- */
 #about {
   padding-top: 6rem;
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
 }
 
 .about-content {
@@ -514,6 +506,9 @@ html {
   align-items: center;
   gap: 0.5rem;
   opacity: 0.7;
+  
+  /* Added transition */
+  transition: opacity 1.5s ease;
 }
 
 .scroll-indicator span {
@@ -551,4 +546,19 @@ html {
   .timeline-header {
     flex-direction: row;
   }
+}
+
+/* --- BOOT SEQUENCE STATE --- */
+/* This forces the browser to see the page as only 100vh tall */
+body.loading {
+  overflow: hidden; 
+  height: 100vh;
+}
+
+/* CRITICAL: Hides everything EXCEPT the Hero section */
+body.loading .nav,
+body.loading .scroll-indicator,
+body.loading section:not(.hero),
+body.loading .footer {
+  display: none !important;
 }
