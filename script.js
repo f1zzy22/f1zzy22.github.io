@@ -66,20 +66,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // UPDATED SEQUENCE WITH "SECURE CONNECTION" DELAY
   const sequence = [
-      { type: "./init_portfolio.sh", delay: 300 },
-      { output: "<span class='cmd-error'>bash: ./init_portfolio.sh: Permission denied</span><br>", delay: 400 },
-      { type: "chmod +x init_portfolio.sh && ./init_portfolio.sh", delay: 500 },
-      { output: "[+] Mounting virtual file system...<br>", delay: 400 },
-      { output: "[+] Loading assets... <span style='color: var(--accent)'>Done</span><br>", delay: 300 },
+      { type: "./init_portfolio.sh", delay: 200 },
+      { output: "<span class='cmd-error'>bash: ./init_portfolio.sh: Permission denied</span><br>", delay: 300 },
+      { type: "chmod +x init_portfolio.sh && ./init_portfolio.sh", delay: 400 },
+      { output: "[+] Mounting virtual file system...<br>", delay: 300 },
+      { output: "[+] Loading assets... <span style='color: var(--accent)'>Done</span><br>", delay: 200 },
       // Added the connection lag steps here:
+      { output: "[+] Establishing secure connection...<br>", delay: 100 }, 
+      { output: "[+] Establishing secure connection...<br>", delay: 250 }, 
       { output: "[+] Establishing secure connection...<br>", delay: 700 }, 
-      { output: "[+] Establishing secure connection...<br>", delay: 700 }, 
-      { output: "[+] Establishing secure connection...<br>", delay: 1000 }, 
-      { output: "[*] Verifying encrypted handshake... <span style='color: var(--accent)'>Success</span><br>", delay: 500 },
-      { output: "[+] Starting local session server... <span style='color: var(--accent)'>OK</span><br>", delay: 400 },
-      { output: "Displaying /etc/motd...<br>", delay: 200 },
-      { output: asciiArt, delay: 300 }, 
-      { output: "<br>[!] <span style='color: var(--accent-blue)'>Interactive mode enabled. Scroll to navigate.</span><br>", delay: 100 }
+      { output: "[*] Verifying encrypted handshake... <span style='color: var(--accent)'>Success</span><br>", delay: 400 },
+      { output: "[+] Starting local session server... <span style='color: var(--accent)'>OK</span><br>", delay: 300 },
+      { output: "Displaying /etc/motd...<br>", delay: 100 },
+      { output: asciiArt, delay: 200 }, 
+      { output: "<br>[!] <span style='color: var(--accent-blue)'>Interactive mode enabled. Scroll to navigate.</span><br>", delay: 90 }
   ];
 
   async function runTerminal() {
