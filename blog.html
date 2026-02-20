@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog | Daniel Han</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <nav class="nav">
+    <div class="nav-container">
+      <div class="nav-logo" onclick="window.location.href='index.html'">&gt; Daniel Han</div>
+      <div class="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#education">Education</a> <a href="index.html#experience">Experience</a>
+        <a href="blog.html" class="active">Blog</a> 
+        <a href="index.html#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section" style="padding-top: 8rem;">
+    <div class="container">
+      
+      <div class="back-btn-container">
+        <a href="index.html#home" class="back-btn">
+          &lt; Back_to_Home
+        </a>
+      </div>
+
+      <div class="section-header">
+        <h2 class="section-title hacker-text" data-value="&gt; blog_posts">&gt; blog_posts</h2>
+      </div>
+      
+      <div class="blog-grid">
+        
+        <article class="blog-card">
+          <div class="blog-header">
+            <span class="blog-date">Feb 19 2026</span>
+          </div>
+          <h3 class="blog-title">Time Traveling on LinkedIn</h3>
+          <p class="blog-desc">
+            How I used Burp Suite to bypass client-side validation and force a future start date on my profile.
+          </p>
+          <a href="posts/logic.html" class="read-more">Read_Entry &gt;</a>
+        </article>
+
+        <article class="blog-card">
+          <div class="blog-header"><span class="blog-date">-- -- ----</span></div>
+          <h3 class="blog-title">---</h3>
+          <p class="blog-desc">---</p>
+          <span class="read-more disabled">Read_Entry &gt;</span>
+        </article>
+
+        <article class="blog-card">
+          <div class="blog-header"><span class="blog-date">-- -- ----</span></div>
+          <h3 class="blog-title">---</h3>
+          <p class="blog-desc">---</p>
+          <span class="read-more disabled">Read_Entry &gt;</span>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Daniel Han. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  <script src="script.js"></script>
+</body>
+</html>

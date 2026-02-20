@@ -562,3 +562,142 @@ body.loading section:not(.hero),
 body.loading .footer {
   display: none !important;
 }
+
+/* --- BLOG SECTION --- */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.blog-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.blog-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 255, 65, 0.1);
+}
+
+/* Optional: Scanline effect on hover */
+.blog-card:hover::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+.blog-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.blog-date {
+  color: var(--text-secondary);
+  font-family: "JetBrains Mono", monospace;
+}
+
+
+.blog-title {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+}
+
+.blog-desc {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  flex-grow: 1; /* Pushes the button to the bottom */
+}
+
+.read-more {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  align-self: flex-start;
+  transition: color 0.3s ease;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.read-more.disabled {
+  color: var(--border);
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.blog-footer {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.view-all-btn {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+  background: var(--bg-secondary);
+}
+
+.view-all-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+}
+
+/* --- BLOG PAGE STYLES --- */
+
+.back-btn-container {
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.back-btn:hover {
+  background: var(--accent);
+  color: var(--bg-primary);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.section-header {
+  margin-bottom: 2rem;
+}
