@@ -222,7 +222,7 @@
           <span class="read-more disabled">Read_Entry &gt;</span>
         </article>
       </div>
-      <div class="blog-footer">
+      <div class="blog-footer reveal">
         <a href="blog.html" class="view-all-btn">[ View_All_Posts ]</a>
       </div>
     </div>
@@ -241,12 +241,26 @@
     </div>
   </section>
 
-  <footer class="footer">
+  <footer class="footer reveal">
     <div class="container">
       <p>&copy; 2026 Daniel Han. All rights reserved.</p>
     </div>
   </footer>
 
   <script src="script.js"></script>
+
+  <div id="malware-overlay" class="malware-overlay">
+    <div class="malware-corruption"></div>
+    <div class="malware-modal">
+      <h2 class="malware-title">Are You Still Browsing?</h2>
+      <p>You have been inactive for 1 minute.</p>
+      <p>For the sake of privacy, you will be signed out to keep the connection safe.</p>
+      <div class="countdown-container">
+        <span id="malware-countdown">60</span><span>s until connection drop...</span>
+      </div>
+      <button id="malware-yes-btn" class="malware-btn">[CONTINUE]</button>
+    </div>
+  </div>
+
 </body>
 </html>

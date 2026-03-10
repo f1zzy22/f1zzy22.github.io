@@ -230,33 +230,21 @@ body.loading .footer {
   display: none !important;
 }
 
+/* --- THE TERMINAL OVERLAY BASE --- */
 .terminal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #050505; /* Solid dark background to hide 3D model */
+  background-color: #000000;
   z-index: 99999;
 }
 
-/* CRT Overlay Texture */
-.terminal-overlay::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-              linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 3;
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
-}
-
-
+/* --- THE GLASS TERMINAL WINDOW --- */
 .terminal-window {
   position: relative;
-  z-index: 2;
+  z-index: 2; /* Sits directly above the binary rain */
   display: flex;
   flex-direction: column;
   width: fit-content; 
@@ -265,12 +253,19 @@ body.loading .footer {
   height: auto !important;
   max-height: 80vh;
   overflow: hidden;
-  background-color: #0a0a0a; /* Solid dark window */
-  border: 1px solid var(--border);
+  
+  /* Make it translucent so the rain falls underneath the text */
+  background-color: rgba(5, 5, 5, 0.85) !important; 
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  
+  border: 1px solid var(--accent); 
   border-radius: 6px; 
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); 
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.15); 
   font-family: "JetBrains Mono", monospace;
   font-size: 0.9rem; 
+  margin: 0;
+  text-align: left;
   transform: scale(0);
   opacity: 0;
   transition: width 0.2s ease-out, height 0.2s ease-out; 
@@ -477,4 +472,105 @@ body.loading .footer {
   .degree-timeline { grid-template-columns: 1fr; }
   .experience-grid { grid-template-columns: 1fr; }
   .timeline-header { flex-direction: row; }
+}
+
+/* --- INACTIVITY MALWARE OVERLAY --- */
+.malware-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: 100000;
+  display: none; /* Hidden by default */
+  align-items: center;
+  justify-content: center;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.malware-overlay.active {
+  display: flex;
+  /* Slowly creeps a dark red vignette inward over 8 seconds */
+  animation: creepIn 8s forwards;
+}
+
+@keyframes creepIn {
+  0% { 
+    background: radial-gradient(circle at center, transparent 100%, rgba(255, 0, 0, 0.8) 100%); 
+    backdrop-filter: blur(0px) contrast(1); 
+  }
+  100% { 
+    background: radial-gradient(circle at center, transparent 0%, rgba(20, 0, 0, 0.95) 100%); 
+    backdrop-filter: blur(8px) contrast(1.5); 
+  }
+}
+
+.malware-corruption {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(255, 0, 0, 0.05) 10px, rgba(255, 0, 0, 0.05) 20px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.malware-overlay.active .malware-corruption {
+  animation: flashCorruption 2s infinite;
+}
+
+@keyframes flashCorruption {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.4; }
+}
+
+.malware-modal {
+  position: relative;
+  background: #050000;
+  border: 1px solid #ff003c;
+  padding: 3rem;
+  color: #ff003c;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(255, 0, 60, 0.5);
+  max-width: 600px;
+  z-index: 2;
+  opacity: 0;
+  transform: scale(0.9);
+  /* Pops the modal in AFTER the screen has been corrupting for 3 seconds */
+  animation: modalPop 0.5s 3s forwards ease-out; 
+}
+
+@keyframes modalPop {
+  to { opacity: 1; transform: scale(1); }
+}
+
+.malware-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-shadow: 2px 0px 10px rgba(255,0,0,0.8);
+}
+
+.malware-modal p {
+  margin-bottom: 1rem;
+  color: #e0e0e0;
+}
+
+.countdown-container {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ff003c;
+  margin: 2rem 0;
+  text-shadow: 0 0 15px rgba(255,0,60,0.8);
+}
+
+.malware-btn {
+  background: transparent;
+  color: #00ff41; /* Hacker green to contrast the red */
+  border: 1px solid #00ff41;
+  padding: 12px 30px;
+  font-family: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.malware-btn:hover {
+  background: #00ff41;
+  color: #000;
+  box-shadow: 0 0 20px #00ff41;
 }
