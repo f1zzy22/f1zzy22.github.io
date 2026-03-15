@@ -167,6 +167,12 @@ html {
   color: var(--accent);
 }
 
+/* Highlights the current page or active scroll section */
+.nav-links a.active {
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.4); /* Optional: adds a subtle hacker glow */
+}
+
 .back-btn {
   display: inline-block;
   padding: 0.6rem 1.2rem;
@@ -188,6 +194,7 @@ html {
   box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
   transform: translateY(-2px); /* Makes it 'pop' up slightly on hover */
 }
+
 
 /* --- HERO SECTION --- */
 .hero {
@@ -578,13 +585,22 @@ body.loading .footer {
 /* --- WORK IN PROGRESS CAUTION TAPE --- */
 .caution-tape-container {
   position: absolute;
-  top: 60%; /* Adjust this to move the tape higher or lower over your 3D model */
-  left: -5vw;
-  width: 110vw; /* Slightly wider than the screen so the tilted edges don't get cut off */
-  z-index: 10; /* High enough to be over the canvas, low enough to be under the terminal */
-  pointer-events: none; /* CRITICAL: Allows you to still click/drag the 3D model underneath */
-  transform: rotate(-3deg); /* Gives it that slapped-on, diagonal tape look */
+  top: 50%; 
+  left: -15vw;
+  width: 130vw; /* Wider to cover the screen diagonally from corner to corner */
+  z-index: 10;
+  pointer-events: none; 
   filter: drop-shadow(0 15px 15px rgba(0, 0, 0, 0.6));
+}
+
+/* Pivot the first tape down */
+.tape-1 {
+  transform: translateY(-50%) rotate(-22deg);
+}
+
+/* Pivot the second tape up */
+.tape-2 {
+  transform: translateY(-50%) rotate(22deg);
 }
 
 .caution-tape {
@@ -627,6 +643,10 @@ body.loading .footer {
   letter-spacing: 2px;
   /* Scrolls the text continuously to the left */
   animation: tapeScroll 15s linear infinite;
+}
+
+.reverse-scroll {
+  animation-direction: reverse;
 }
 
 @keyframes tapeScroll {
@@ -678,3 +698,4 @@ body.loading .footer {
     transform: translate(-50%, -5px);
   }
 }
+

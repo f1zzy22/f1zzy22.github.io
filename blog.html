@@ -12,12 +12,13 @@
 
   <nav class="nav">
     <div class="nav-container">
-      <a href="index.html" class="nav-logo nav-glitch" data-text="> Daniel Han">&gt; Daniel Han</a>
+      <a href="index.html"><div class="nav-logo nav-glitch" data-text="> Daniel Han">&gt; Daniel Han</div></a>
       <div class="nav-links">
           <a href="index.html#about" class="hacker-text" data-value="About">About</a>
           <a href="index.html#education" class="hacker-text" data-value="Education">Education</a> 
           <a href="index.html#experience" class="hacker-text" data-value="Experience">Experience</a>
           <a href="blog.html" class="hacker-text active" data-value="Blog">Blog</a> 
+          <a href="misc.html" class="hacker-text" data-value="Misc">Misc</a>
           <a href="index.html#contact" class="hacker-text" data-value="Contact">Contact</a>
       </div>
     </div>
@@ -72,7 +73,171 @@
       <p>&copy; 2026 Daniel Han. All rights reserved.</p>
     </div>
   </footer>
+
+  <div id="terminal-overlay" class="terminal-overlay" style="display: none; background: transparent; z-index: 9998; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; align-items: center; justify-content: center;">
+    <div class="terminal-window" style="transform: scale(1); opacity: 1;">
+      <div class="terminal-header">
+        <div class="terminal-btn red"></div>
+        <div class="terminal-btn yellow"></div>
+        <div class="terminal-btn green"></div>
+      </div>
+      <div class="terminal-body" id="terminal-content"></div>
+    </div>
+  </div>
+
+  <div id="malware-overlay" class="malware-overlay">
+    <div class="malware-corruption"></div>
+    <div class="malware-modal">
+      <h2 class="malware-title">Are You Still Browsing?</h2>
+      <p>You have been inactive for some time.</p>
+      <p>You will be signed out soon to keep the connection safe.</p>
+      <div class="countdown-container">
+        <span id="malware-countdown">60</span><span>s until connection drop...</span>
+      </div>
+      <button id="malware-yes-btn" class="malware-btn">[CONTINUE]</button>
+    </div>
+  </div>
   
   <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script>
+    // --- EXACT ORIGINAL CUSTOM BINARY MATRIX RAIN ---
+    const overlay = document.getElementById('terminal-overlay');
+    let matrixInterval;
+
+    function startMatrixRain() {
+        if (!overlay) return;
+        if (matrixInterval) clearInterval(matrixInterval); // Prevent doubles
+
+        let matrixCanvas = document.getElementById('matrix-canvas');
+        if (!matrixCanvas) {
+            matrixCanvas = document.createElement('canvas');
+            matrixCanvas.id = 'matrix-canvas';
+            matrixCanvas.style.position = 'absolute';
+            matrixCanvas.style.top = '0';
+            matrixCanvas.style.left = '0';
+            matrixCanvas.style.width = '100%';
+            matrixCanvas.style.height = '100%';
+            matrixCanvas.style.zIndex = '0'; 
+            matrixCanvas.style.pointerEvents = 'none';
+            overlay.prepend(matrixCanvas);
+        }
+
+        const ctx = matrixCanvas.getContext('2d');
+        let w = matrixCanvas.width = window.innerWidth;
+        let h = matrixCanvas.height = window.innerHeight;
+
+        const cols = Math.floor(w / 20) + 1;
+        const yPos = Array(cols).fill(0);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+            ctx.fillRect(0, 0, w, h);
+            ctx.font = '14pt "JetBrains Mono", monospace';
+            
+            yPos.forEach((y, ind) => {
+                const text = Math.random() > 0.5 ? '1' : '0'; 
+                const colorChance = Math.random();
+                
+                if (colorChance > 0.98) {
+                    ctx.fillStyle = 'rgba(255, 0, 193, 0.6)';  // Hot Pink
+                } else if (colorChance > 0.93) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // White
+                } else if (colorChance > 0.78) {
+                    ctx.fillStyle = 'rgba(0, 212, 255, 0.3)';   // Blue
+                } else {
+                    ctx.fillStyle = 'rgba(0, 255, 65, 0.3)';    // Hacker Green
+                }
+                
+                const x = ind * 20;
+                ctx.fillText(text, x, y);
+                
+                if (y > 100 + Math.random() * 10000) yPos[ind] = 0;
+                else yPos[ind] = y + 20;
+            });
+        }
+        matrixInterval = setInterval(drawMatrix, 50); 
+    }
+
+    // --- YOUR EXACT INACTIVITY MALWARE TIMEOUT ---
+    const inactivityLimit = 60 * 1000; // 60 seconds
+    let inactivityTimer;
+    let countdownInterval;
+    let isMalwareActive = false;
+    let timeLeft = 60;
+
+    const malwareOverlay = document.getElementById('malware-overlay');
+    const countdownDisplay = document.getElementById('malware-countdown');
+    const yesBtn = document.getElementById('malware-yes-btn');
+    const terminalContent = document.getElementById('terminal-content');
+    const terminalWindow = document.querySelector('.terminal-window');
+
+    function resetInactivityTimer() {
+        if (isMalwareActive) return; 
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(triggerMalware, inactivityLimit);
+    }
+
+    function triggerMalware() {
+        isMalwareActive = true;
+        timeLeft = 60;
+        if(countdownDisplay) countdownDisplay.innerText = timeLeft;
+        if(malwareOverlay) malwareOverlay.classList.add('active');
+        
+        countdownInterval = setInterval(() => {
+            timeLeft--;
+            if(countdownDisplay) countdownDisplay.innerText = timeLeft;
+            
+            if (timeLeft <= 0) {
+                triggerSessionExpired();
+            }
+        }, 1000);
+    }
+
+    function triggerSessionExpired() {
+        clearInterval(countdownInterval);
+        if(malwareOverlay) malwareOverlay.classList.remove('active');
+        
+        // Hide the rest of the page so it looks like a real crash
+        document.querySelector('.nav').style.display = 'none';
+        document.querySelector('.section').style.display = 'none';
+        
+        document.body.classList.add('loading');
+        
+        if (typeof gsap !== 'undefined' && terminalWindow && overlay) {
+            gsap.killTweensOf([terminalWindow, overlay]);
+            gsap.set(overlay, { display: 'flex', opacity: 1 });
+            gsap.set(terminalWindow, { scale: 1, x: "0vw", y: "0vh", rotation: 0, opacity: 1 });
+        } else if (overlay) {
+            overlay.style.display = 'flex';
+        }
+
+        if (terminalContent) {
+            terminalContent.innerHTML = `
+                <span class="cmd-user">guest@daniel-han-portfolio</span>:<span class="cmd-path">~</span>$ connection_status<br>
+                <span class="cmd-error">Connection closed by remote host.</span><br>
+                <span class="cmd-error">Session expired. Idle state detected.</span><br><br>
+                <span class="cmd-user">guest@daniel-han-portfolio</span>:<span class="cmd-path">~</span>$ Please refresh the page to establish a new secure connection.<span class="cmd-input"></span>
+            `;
+        }
+
+        startMatrixRain();
+    }
+
+    if (yesBtn) {
+        yesBtn.addEventListener('click', () => {
+            isMalwareActive = false;
+            clearInterval(countdownInterval);
+            if(malwareOverlay) malwareOverlay.classList.remove('active');
+            resetInactivityTimer();
+        });
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(evt => {
+        window.addEventListener(evt, resetInactivityTimer);
+    });
+
+    resetInactivityTimer();
+  </script>
 </body>
 </html>

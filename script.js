@@ -166,32 +166,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        const yellowBtn = document.querySelector('.terminal-btn.yellow');
         const terminalWindow = document.querySelector('.terminal-window');
 
-        if (yellowBtn) {
-            tl.to(yellowBtn, { scale: 0.7, filter: "brightness(1.5)", duration: 0.1 })
-              .to(yellowBtn, { scale: 1, filter: "brightness(1)", duration: 0.1 });
-        }
-
         if (terminalWindow) {
+            // Smoothly fade out the terminal window
             tl.to(terminalWindow, {
-                scale: 0.05,
-                x: "40vw",
-                y: "55vh",
-                rotation: 10,
                 opacity: 0,
-                duration: 1.22,
-                ease: "power2.in"
-            }, "+=0.2");
+                duration: 0.8,
+                ease: "power2.inOut"
+            });
         }
 
         if (overlay) {
+            // Fade out the overlay and matrix rain concurrently with the window
             tl.to(overlay, {
                 opacity: 0,
                 duration: 0.8,
                 ease: "power2.inOut"
-            }, "-=0.5"); 
+            }, "<"); 
         }
     }
 
