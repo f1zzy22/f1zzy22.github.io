@@ -18,6 +18,17 @@
   img-src 'self' data:;
 ">
   <style>
+
+.header-cursor {
+      color: var(--accent);
+      margin-left: 4px;
+      animation: opacityBlink 1s step-end infinite;
+    }
+    @keyframes opacityBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
     .typing-section-wrapper { max-width: 1000px; margin: 0 auto; width: 90%; }
     
     .dashboard-wrapper {
@@ -217,7 +228,9 @@
       <h2 class="section-title hacker-text" data-value="> misc">&gt; misc</h2>
       
       <div style="margin-bottom: 3rem;">
-        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.8rem;">Can You Type Faster Than Me?</h3>
+        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.8rem; display: flex; align-items: center;">
+            <span id="animated-header-text"></span><span class="header-cursor">_</span>
+        </h3>
         <p style="color: var(--text-secondary); line-height: 1.6;">
             My best recorded pace so far is <strong id="daniel-score-text" style="color: #ffd700;">... WPM</strong><span id="daniel-date-text" style="opacity: 0.7; font-size: 0.9em;"></span>. 
             Beat my score to forever earn a spot on my digital Hall of Fame. <br><br>Note: High scores are published to the performance graph below.
@@ -787,11 +800,47 @@
       performanceChart.update();
     }
 
+    async function typeHeaderTypoEffect() {
+        const textSpan = document.getElementById('animated-header-text');
+        if (!textSpan) return;
+
+        const part1 = "Can Yo Type Fster THan";
+        const deletes = 16; // Deletes "ster THan"
+        const part2 = "u Type Faster Than Me?";
+
+        // 1. Type the mistake out normally
+        for (let i = 0; i < part1.length; i++) {
+            textSpan.textContent += part1[i];
+            // Random delay between 40ms and 90ms for realistic human pacing
+            await new Promise(r => setTimeout(r, Math.random() * 50 + 40));
+        }
+
+        // 2. Pause (The "Wait, I messed up" realization)
+        await new Promise(r => setTimeout(r, 600));
+
+        // 3. Mash the backspace key
+        for (let i = 0; i < deletes; i++) {
+            textSpan.textContent = textSpan.textContent.slice(0, -1);
+            // Fast backspace speed
+            await new Promise(r => setTimeout(r, 30)); 
+        }
+
+        // 4. Slight pause before correcting
+        await new Promise(r => setTimeout(r, 300));
+
+        // 5. Type the correct ending
+        for (let i = 0; i < part2.length; i++) {
+            textSpan.textContent += part2[i];
+            await new Promise(r => setTimeout(r, Math.random() * 50 + 40));
+        }
+    }
+
     restartBtn.addEventListener('click', initTest);
     window.onload = async () => { 
       await fetchDanielScore();
       initTest(); 
       initChart(); 
+      typeHeaderTypoEffect();
     };
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -954,7 +1003,7 @@
             }, 30);
         };
     });
-    
+
   </script>
 </body>
 </html>
