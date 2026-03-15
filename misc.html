@@ -701,7 +701,7 @@
                 label: (c) => {
                   const pct = Math.round(c.raw.x);
                   if (c.raw.user === 'f1zzy22') {
-                    return `DANIEL [f1zzy22] - ${getOrdinalSuffix(pct)}: ${c.raw.y} WPM`;
+                    return `f1zzy22 - ${getOrdinalSuffix(pct)}: ${c.raw.y} WPM`;
                   }
                   return `${c.raw.user} - ${getOrdinalSuffix(pct)}: ${c.raw.y} WPM`;
                 }
@@ -763,7 +763,7 @@
       const danielLabel = performanceChart.options.plugins.annotation.annotations.danielLine.label;
       performanceChart.options.plugins.annotation.annotations.danielLine.yMin = myWPM;
       performanceChart.options.plugins.annotation.annotations.danielLine.yMax = myWPM;
-      danielLabel.content = `DANIEL [f1zzy22]: ${myWPM} WPM`;
+      danielLabel.content = `f1zzy22: ${myWPM} WPM`;
 
       if (newUsername && newUsername !== 'f1zzy22') {
         const userPoint = chartData.find(d => d.user === newUsername);
