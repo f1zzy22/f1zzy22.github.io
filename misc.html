@@ -687,26 +687,47 @@
           plugins: { 
             legend: { display: false },
             tooltip: {
-              enabled: true,
-              position: 'nearest',
-              backgroundColor: 'rgba(20, 20, 20, 0.9)',
-              titleFont: { family: 'JetBrains Mono', size: 12 },
-              bodyFont: { family: 'JetBrains Mono', size: 13, weight: 'bold' },
-              padding: 10,
-              displayColors: false,
-              yAlign: 'bottom', 
-              caretPadding: 15,
-              callbacks: { 
-                title: () => null, 
-                label: (c) => {
-                  const pct = Math.round(c.raw.x);
-                  if (c.raw.user === 'f1zzy22') {
-                    return `f1zzy22 - ${getOrdinalSuffix(pct)}: ${c.raw.y} WPM`;
-                  }
-                  return `${c.raw.user} - ${getOrdinalSuffix(pct)}: ${c.raw.y} WPM`;
-                }
-              } 
-            },
+  enabled: true,
+  position: 'nearest',
+  backgroundColor: 'rgba(20, 20, 20, 0.95)',
+  borderColor: 'rgba(255, 255, 255, 0.1)',
+  borderWidth: 1,
+  padding: 12,
+  displayColors: false,
+  yAlign: 'bottom', 
+  caretPadding: 15,
+  
+  // Style the Username (Title)
+  titleFont: { family: 'JetBrains Mono', size: 14, weight: 'bold' },
+  titleColor: (context) => {
+    // Dynamically color the title based on the user
+    const user = context.tooltip.dataPoints?.[0]?.raw?.user;
+    return user === 'f1zzy22' ? '#ffd700' : '#00ff41'; 
+  },
+  
+  // Style the Stats (Body)
+  bodyFont: { family: 'JetBrains Mono', size: 13 },
+  bodyColor: '#e0e0e0', // Slightly dimmed white for hierarchy
+  
+  callbacks: { 
+  // Keep the username as the title
+  title: (c) => c[0].raw.user, 
+  
+  // Convert percentile to "Top X%"
+  label: (c) => {
+    const percentile = c.raw.x; // Assuming x is the raw percentile (0-100)
+    let topPct = 100 - percentile;
+
+    if (topPct <= 0.01) topPct = 0.01;
+    if (topPct >= 99.99) topPct = 99.99;
+
+    // toFixed(2) keeps the precision for 0.01, and parseFloat strips trailing zeros for whole numbers (e.g., 5.00 becomes 5)
+    const displayPct = parseFloat(topPct.toFixed(2));
+
+    return `${c.raw.y} WPM (top ${displayPct}%)`;
+  }
+}
+},
             annotation: {
               annotations: {
                 danielLine: {
