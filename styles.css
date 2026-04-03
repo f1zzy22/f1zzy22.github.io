@@ -213,13 +213,54 @@ html {
   height: 100vh;
   overflow: hidden;
 }
+/* --- HERO PLACEHOLDER --- */
+#hero-placeholder {
+  position: relative;
+  z-index: 5; /* Keeps it above the background grid but below the caution tape */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 
-#webgl-container {
+.hero-title {
+  font-size: clamp(3rem, 8vw, 6rem); /* Responsive sizing */
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  color: var(--text-secondary);
+}
+
+/* Optional Glitch Effect for the Hero Title */
+.glitch-text {
+  position: relative;
+}
+.glitch-text::before, .glitch-text::after {
+  content: attr(data-text);
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  background: var(--bg-primary);
+  z-index: -1;
+}
+.glitch-text::before {
+  left: 3px;
+  text-shadow: -2px 0 #ff00c1;
+  animation: glitch-1 3s infinite linear alternate-reverse;
+}
+.glitch-text::after {
+  left: -3px;
+  text-shadow: -2px 0 #00fff9;
+  animation: glitch-2 3s infinite linear alternate-reverse;
 }
 
 /* --- BOOT SEQUENCE  --- */
@@ -582,77 +623,6 @@ body.loading .footer {
   box-shadow: 0 0 20px #00ff41;
 }
 
-/* --- WORK IN PROGRESS CAUTION TAPE --- */
-.caution-tape-container {
-  position: absolute;
-  top: 50%; 
-  left: -15vw;
-  width: 130vw; /* Wider to cover the screen diagonally from corner to corner */
-  z-index: 10;
-  pointer-events: none; 
-  filter: drop-shadow(0 15px 15px rgba(0, 0, 0, 0.6));
-}
-
-/* Pivot the first tape down */
-.tape-1 {
-  transform: translateY(-50%) rotate(-22deg);
-}
-
-/* Pivot the second tape up */
-.tape-2 {
-  transform: translateY(-50%) rotate(22deg);
-}
-
-.caution-tape {
-  width: 100%;
-  height: 50px;
-  /* Authentic diagonal yellow and black caution stripes */
-  background: repeating-linear-gradient(
-    -45deg,
-    #ffd700,
-    #ffd700 20px,
-    #111111 20px,
-    #111111 40px
-  );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* The solid yellow band in the middle so the text is highly readable */
-.caution-text-band {
-  width: 100%;
-  height: 32px;
-  background-color: #ffd700;
-  border-top: 2px solid #111;
-  border-bottom: 2px solid #111;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-/* The scrolling text */
-.caution-marquee {
-  display: inline-block;
-  white-space: nowrap;
-  font-family: "JetBrains Mono", monospace;
-  font-weight: 900;
-  font-size: 1.1rem;
-  color: #111;
-  letter-spacing: 2px;
-  /* Scrolls the text continuously to the left */
-  animation: tapeScroll 15s linear infinite;
-}
-
-.reverse-scroll {
-  animation-direction: reverse;
-}
-
-@keyframes tapeScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); } /* Scrolls half the width to create a seamless loop */
-}
 
 /* --- SCROLL INDICATOR --- */
 .scroll-indicator {
