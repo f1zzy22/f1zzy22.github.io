@@ -48,10 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let matrixInterval; 
 
-    // Abstracted the matrix rain so we can call it whenever we want
     function startMatrixRain() {
         if (!overlay) return;
-        if (matrixInterval) clearInterval(matrixInterval); // Prevent doubles
+        if (matrixInterval) clearInterval(matrixInterval); 
 
         let matrixCanvas = document.getElementById('matrix-canvas');
         if (!matrixCanvas) {
@@ -163,13 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (overlay) overlay.style.display = 'none';
                 document.body.classList.remove('loading');
                 if (matrixInterval) clearInterval(matrixInterval); 
+
+                // --- NEW: Trigger the name explosion here ---
+                if (window.startHeroAnimation) window.startHeroAnimation();
             }
         });
 
         const terminalWindow = document.querySelector('.terminal-window');
 
         if (terminalWindow) {
-            // Smoothly fade out the terminal window
             tl.to(terminalWindow, {
                 opacity: 0,
                 duration: 0.8,
@@ -178,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (overlay) {
-            // Fade out the overlay and matrix rain concurrently with the window
             tl.to(overlay, {
                 opacity: 0,
                 duration: 0.8,
@@ -187,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Run terminal on fresh load, skip if there's a hash
     if (!window.location.hash) {
         runTerminal();
     } else {
@@ -237,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 100);
 
     // --- 7. INACTIVITY MALWARE TIMEOUT ---
-    const inactivityLimit = 60 * 1000; // 60 seconds of idle time
+    const inactivityLimit = 60 * 1000; 
     let inactivityTimer;
     let countdownInterval;
     let isMalwareActive = false;
@@ -249,7 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetInactivityTimer() {
         if (isMalwareActive) return; 
-        
         clearTimeout(inactivityTimer);
         inactivityTimer = setTimeout(triggerMalware, inactivityLimit);
     }
@@ -263,7 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
         countdownInterval = setInterval(() => {
             timeLeft--;
             if(countdownDisplay) countdownDisplay.innerText = timeLeft;
-            
             if (timeLeft <= 0) {
                 triggerSessionExpired();
             }
@@ -273,35 +270,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerSessionExpired() {
         clearInterval(countdownInterval);
         if(malwareOverlay) malwareOverlay.classList.remove('active');
-        
-        // 1. Lock the screen again so they can't scroll
         document.body.classList.add('loading');
-
-        // 2. Summon the original terminal back
         const terminalWindow = document.querySelector('.terminal-window');
-        
-        // Kill any previous shrinking animations
         gsap.killTweensOf([terminalWindow, overlay]);
-
-        // Snap terminal and overlay back to full center immediately
         gsap.set(overlay, { display: 'flex', opacity: 1 });
-        gsap.set(terminalWindow, {
-            scale: 1,
-            x: "0vw",
-            y: "0vh",
-            rotation: 0,
-            opacity: 1
-        });
+        gsap.set(terminalWindow, { scale: 1, x: "0vw", y: "0vh", rotation: 0, opacity: 1 });
 
-        // 3. Inject the kill message into the terminal
         terminalContent.innerHTML = `
             <span class="cmd-user">guest@daniel-han-portfolio</span>:<span class="cmd-path">~</span>$ connection_status<br>
             <span class="cmd-error">Connection closed by remote host.</span><br>
             <span class="cmd-error">Session expired. Idle state detected.</span><br><br>
             <span class="cmd-user">guest@daniel-han-portfolio</span>:<span class="cmd-path">~</span>$ Please refresh the page to establish a new secure connection.<span class="cmd-input"></span>
         `;
-
-        // 4. Restart the matrix rain
         startMatrixRain();
     }
 
