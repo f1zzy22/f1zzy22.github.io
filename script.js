@@ -163,27 +163,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.classList.remove('loading');
                 if (matrixInterval) clearInterval(matrixInterval); 
 
-                // --- NEW: Trigger the name explosion here ---
-                if (window.startHeroAnimation) window.startHeroAnimation();
+                // 1. START THE IDLE CANVAS IMMEDIATELY
+                if (window.startHeroAnimation) {
+                    window.startHeroAnimation(); 
+                }
+
+                // 2. SHOW THE BUTTON
+                const actionZone = document.getElementById('detonation-container');
+                const detonateBtn = document.getElementById('detonate-btn');
+
+                if (actionZone && detonateBtn) {
+                    actionZone.style.display = 'flex';
+                    setTimeout(() => {
+                        actionZone.style.opacity = '1';
+                    }, 50);
+
+                    // 3. TRIGGER COUNTDOWN ON CLICK
+                    detonateBtn.onclick = () => {
+                        actionZone.style.opacity = '0';
+                        setTimeout(() => {
+                            actionZone.style.display = 'none';
+                            // Fire the countdown trigger!
+                            if (window.triggerDetonation) {
+                                window.triggerDetonation();
+                            }
+                        }, 400); 
+                    };
+                }
             }
         });
 
         const terminalWindow = document.querySelector('.terminal-window');
-
         if (terminalWindow) {
-            tl.to(terminalWindow, {
-                opacity: 0,
-                duration: 0.8,
-                ease: "power2.inOut"
-            });
+            tl.to(terminalWindow, { opacity: 0, duration: 0.8, ease: "power2.inOut" });
         }
-
         if (overlay) {
-            tl.to(overlay, {
-                opacity: 0,
-                duration: 0.8,
-                ease: "power2.inOut"
-            }, "<"); 
+            tl.to(overlay, { opacity: 0, duration: 0.8, ease: "power2.inOut" }, "<"); 
         }
     }
 
@@ -192,6 +207,32 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         document.body.classList.remove('loading');
         if (overlay) overlay.style.display = 'none';
+        if (matrixInterval) clearInterval(matrixInterval);
+        
+        // --- THE MISSING FIX: Force load the canvas and button! ---
+        if (window.startHeroAnimation) {
+            window.startHeroAnimation(); 
+        }
+
+        const actionZone = document.getElementById('detonation-container');
+        const detonateBtn = document.getElementById('detonate-btn');
+
+        if (actionZone && detonateBtn) {
+            actionZone.style.display = 'flex';
+            actionZone.style.opacity = '1'; // Instantly visible since we skipped the intro
+
+            // Attach the click event so the button actually works
+            detonateBtn.onclick = () => {
+                actionZone.style.opacity = '0';
+                setTimeout(() => {
+                    actionZone.style.display = 'none';
+                    if (window.triggerDetonation) {
+                        window.triggerDetonation();
+                    }
+                }, 400); 
+            };
+        }
+        // -----------------------------------------------------------
         
         setTimeout(() => {
             const target = document.querySelector(window.location.hash);
@@ -299,4 +340,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     resetInactivityTimer();
+
 });

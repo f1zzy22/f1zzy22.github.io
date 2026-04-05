@@ -41,6 +41,45 @@
     <canvas id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none;"></canvas>    <div id="target-text" style="display:none;">DANIEL HAN</div>
 </section>
   
+<div id="detonation-container" style="display: none; opacity: 0;">
+    
+  <div class="arrow-cluster">
+      <div class="arrow-wrap" style="--angle: -85deg;">
+          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+      </div>
+      <div class="arrow-wrap" style="--angle: -55deg;">
+          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+      </div>
+      <div class="arrow-wrap" style="--angle: -25deg;">
+          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+      </div>
+      <div class="arrow-wrap" style="--angle: 0deg;">
+          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+      </div>
+      <div class="arrow-wrap" style="--angle: 25deg;">
+          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+      </div>
+      <div class="arrow-wrap" style="--angle: 55deg;">
+          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+      </div>
+      <div class="arrow-wrap" style="--angle: 85deg;">
+          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+      </div>
+  </div>
+
+  <div class="button-scene">
+      <div class="button-3d-wrapper">
+          <div class="button-base"></div>
+          <button id="detonate-btn" class="button-top">
+              <span>DO NOT<br>PRESS</span>
+          </button>
+      </div>
+  </div>
+
+</div>
+
+
+
     <a href="#about" class="scroll-indicator">
       <span class="scroll-text">Scroll Down</span>
       <svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

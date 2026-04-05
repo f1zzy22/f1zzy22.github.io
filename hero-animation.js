@@ -3,6 +3,11 @@ window.startHeroAnimation = () => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
+    // --- NEW: PREVENT DUPLICATE ANIMATIONS ON RESET ---
+    if (window.heroAnimationFrame) {
+        cancelAnimationFrame(window.heroAnimationFrame);
+    }
+
     const name = "DANIEL HAN";
     const initialCountdown = (Math.random() * 1.5 + 3.5).toFixed(2);
     let countdown = parseFloat(initialCountdown);
@@ -16,6 +21,12 @@ window.startHeroAnimation = () => {
     let crawlStartTime = 0; 
     let isWaving = false;
     
+    // --- NEW STATES FOR THE BUTTON TRIGGER ---
+    window.isCountingDown = false; 
+    window.triggerDetonation = () => {
+        window.isCountingDown = true;
+    };
+
     let glitchState = 0; 
     let bodyOffsetX = 0;
     let bodyOffsetY = 0;
@@ -183,13 +194,8 @@ window.startHeroAnimation = () => {
                         this.y += this.vy;
                         this.rotation += this.spin;
 
-                        if (this.x < 50) { 
-                            this.x = 50; 
-                            this.vx = Math.abs(this.vx) * 0.7; 
-                        } else if (this.x > canvas.width - 50) { 
-                            this.x = canvas.width - 50; 
-                            this.vx = -Math.abs(this.vx) * 0.7; 
-                        }
+                        if (this.x < 50) { this.x = 50; this.vx *= -0.7; }
+                        else if (this.x > canvas.width - 50) { this.x = canvas.width - 50; this.vx *= -0.7; }
 
                         const floorY = canvas.height / 2 + 150; 
                         if (this.y > floorY) {
@@ -219,14 +225,12 @@ window.startHeroAnimation = () => {
                             cTargetX += (Math.random() - 0.5) * 8;
                             cTargetRot += (Math.random() - 0.5) * 0.15;
                         }
-                        // Right arm swings while walking instead of the left
                         if (this.id === 'r_arm_1' || this.id === 'r_arm_2') {
                             cTargetX += Math.sin(walkCycle + Math.PI) * 20;
                             cTargetRot += Math.sin(walkCycle + Math.PI) * 0.3;
                         }
                     }
 
-                    // PHASE 4: LEFT ARM REACHES DOWN
                     if (glitchState === 4 && (this.id === 'l_arm_1' || this.id === 'l_arm_2')) {
                         const headParticle = particles.find(p => p.id === 'head');
                         if (this.id === 'l_arm_2') {
@@ -240,7 +244,6 @@ window.startHeroAnimation = () => {
                         }
                     }
 
-                    // PHASE 5: LEFT HAND HOLDS HEAD
                     if (this.id === 'head' && glitchState === 5) {
                         const lHand = particles.find(p => p.id === 'l_arm_2');
                         this.x += (lHand.x - this.x) * 0.4;
@@ -248,7 +251,6 @@ window.startHeroAnimation = () => {
                         this.rotation += (0 - this.rotation) * 0.1; 
                     }
 
-                    // PHASE 5: LEFT ARM MOVES HEAD BACK TO NECK
                     if (glitchState === 5 && (this.id === 'l_arm_1' || this.id === 'l_arm_2')) {
                         const neckX = canvas.width / 2 + bodyOffsetX;
                         const neckY = canvas.height / 2 - 110 + bodyOffsetY;
@@ -278,7 +280,6 @@ window.startHeroAnimation = () => {
                     }
 
                 } else {
-                    // PHASE 0: RIGHT ARM WAVING ('L')
                     if (this.id === 'r_arm_2') {
                         const waveAngle = -0.85 + Math.sin(Date.now() * 0.003) * 0.6; 
                         const pivotX = canvas.width / 2 + 45; 
@@ -365,17 +366,16 @@ window.startHeroAnimation = () => {
         const cx = canvas.width / 2;
         const cy = canvas.height / 2 + 30;
 
-        // PERFECTED NEW TARGET MAPPING
         const targets = [
-            { x: cx, y: cy - 110, rot: (Math.random()-0.5)*0.3, id: 'head' },     // D
-            { x: cx - 85, y: cy - 5, rot: 0.8, id: 'l_arm_2' },                   // A (Left Hand)
-            { x: cx - 45, y: cy - 40, rot: 0.8, id: 'l_arm_1' },                  // N (Left Arm)
-            { x: cx, y: cy - 40, rot: 0, id: 'torso_1' },                         // I (Spine)
-            { x: cx + 45, y: cy - 60, rot: -0.4, id: 'r_arm_1' },                 // E (Right Arm, Raised)
-            { x: cx + 80, y: cy - 100, rot: -0.85, id: 'r_arm_2' },               // L (Right Hand, Waving Hook)
-            { x: cx - 35, y: cy + 80, rot: 0, id: 'l_leg' },                      // H (Left Leg)
-            { x: cx, y: cy + 10, rot: 0, id: 'torso_2' },                         // A (Pelvis)
-            { x: cx + 35, y: cy + 80, rot: 0, id: 'r_leg' }                       // N (Right Leg)
+            { x: cx, y: cy - 110, rot: (Math.random()-0.5)*0.3, id: 'head' },     
+            { x: cx - 85, y: cy - 5, rot: 0.8, id: 'l_arm_2' },                   
+            { x: cx - 45, y: cy - 40, rot: 0.8, id: 'l_arm_1' },                  
+            { x: cx, y: cy - 40, rot: 0, id: 'torso_1' },                         
+            { x: cx + 45, y: cy - 60, rot: -0.4, id: 'r_arm_1' },                 
+            { x: cx + 80, y: cy - 100, rot: -0.85, id: 'r_arm_2' },               
+            { x: cx - 35, y: cy + 80, rot: 0, id: 'l_leg' },                      
+            { x: cx, y: cy + 10, rot: 0, id: 'torso_2' },                         
+            { x: cx + 35, y: cy + 80, rot: 0, id: 'r_leg' }                       
         ];
 
         particles.forEach((p, index) => {
@@ -387,6 +387,20 @@ window.startHeroAnimation = () => {
             p.startY = p.y;
             p.startRot = p.rotation;
         });
+    }
+
+    function drawIdleName() {
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.font = 'bold 80px "JetBrains Mono"';
+        ctx.fillStyle = "#00ff41"; 
+        ctx.shadowColor = "#00ff41";
+        // Very slow, calm breathing effect before the button is clicked
+        ctx.shadowBlur = 10 + Math.sin(Date.now() / 400) * 5; 
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(name, 0, 0);
+        ctx.restore();
     }
 
     function drawPulsingName() {
@@ -404,24 +418,36 @@ window.startHeroAnimation = () => {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(name, 0, 0);
+
+        if (countdown < 0.6 && Math.random() > 0.4) {
+            ctx.fillStyle = "rgba(255, 0, 60, 0.7)";
+            ctx.fillText(name, (Math.random()-0.5)*20, (Math.random()-0.5)*20);
+            ctx.fillStyle = "rgba(0, 212, 255, 0.7)";
+            ctx.fillText(name, (Math.random()-0.5)*20, (Math.random()-0.5)*20);
+        }
         ctx.restore();
     }
 
     function animate() {
-        const cycleTime = Date.now() % 16000;
+        // --- MASTER TIMELINE UPDATED TO 17 SECONDS ---
+        const cycleTime = Date.now() % 17000;
         let newPhase = 0;
         
-        if (cycleTime > 5000 && cycleTime < 5400) newPhase = 1;      
-        else if (cycleTime >= 5400 && cycleTime < 6800) newPhase = 2; 
-        else if (cycleTime >= 6800 && cycleTime < 10000) newPhase = 3; 
-        else if (cycleTime >= 10000 && cycleTime < 11200) newPhase = 4; 
-        else if (cycleTime >= 11200 && cycleTime < 14500) newPhase = 5; 
-        else if (cycleTime >= 14500 && cycleTime < 16000) newPhase = 6; 
+        // 1-SECOND GREEN PAUSE INSERTED IN THE MIDDLE OF THE SHAKE
+        if (cycleTime > 5000 && cycleTime < 5200) newPhase = 1;       // 1st half of violent red shake
+        else if (cycleTime >= 5200 && cycleTime < 5900) newPhase = 0; // 1-second calm green pause
+        else if (cycleTime >= 5900 && cycleTime < 6400) newPhase = 1; // 2nd half of violent red shake
+        
+        // The rest of the Frankenstein walk cycle (Shifted +1000ms)
+        else if (cycleTime >= 6400 && cycleTime < 7800) newPhase = 2; 
+        else if (cycleTime >= 7800 && cycleTime < 11000) newPhase = 3; 
+        else if (cycleTime >= 11000 && cycleTime < 12200) newPhase = 4; 
+        else if (cycleTime >= 12200 && cycleTime < 15500) newPhase = 5; 
+        else if (cycleTime >= 15500 && cycleTime < 17000) newPhase = 6; 
 
         if (newPhase === 3) {
             const headParticle = particles.find(p => p.id === 'head');
             if (headParticle) {
-                // Because head bounces left, body walks to the right of the head
                 let targetOffsetX = headParticle.x - (canvas.width / 2) + 35; 
                 let dist = targetOffsetX - bodyOffsetX;
                 if (Math.abs(dist) > 30) {
@@ -458,7 +484,6 @@ window.startHeroAnimation = () => {
             const head = particles.find(p => p.id === 'head');
             if (head) {
                 head.vy = -12 - Math.random() * 4; 
-                // Force bounce LEFT so the left arm can grab it
                 head.vx = -Math.abs(Math.random() * 5 + 4); 
                 head.spin = (Math.random() - 0.5) * 0.8;
                 
@@ -470,9 +495,34 @@ window.startHeroAnimation = () => {
         glitchState = newPhase;
 
         const allLettersStopped = exploded && particles.length > 0 && particles.every(p => p.stopped);
+        
+        // --- TWITCHING HEAD WAKE-UP SEQUENCE ---
         if (allLettersStopped && !isCrawling && !isWaving) {
             if (timeSinceStop === 0) timeSinceStop = Date.now();
-            if (Date.now() - timeSinceStop > 2500) {
+            
+            let elapsedIdle = Date.now() - timeSinceStop;
+            
+            // Between 1.5s and 1.7s, the "D" (head) violently twitches
+            if (elapsedIdle > 1500 && elapsedIdle < 1700) {
+                
+                // INCREASED FREQUENCY: Now twitches on 90% of frames instead of 50%
+                if (Math.random() > 0.1) {
+                    // INCREASED MAGNITUDE: Jumps up to 14 pixels instead of 6
+                    particles[0].x += (Math.random() - 0.5) * 14; 
+                    particles[0].y += (Math.random() - 0.5) * 14; 
+                    
+                    // Thrashes its rotation twice as hard
+                    particles[0].rotation += (Math.random() - 0.5) * 0.8; 
+                    
+                    // Bleeds more often while thrashing
+                    if (Math.random() > 0.6) { 
+                        splatters.push(new BloodSplatter(particles[0].x, particles[0].y, (Math.random()-0.5)*6, (Math.random()-0.5)*6, true));
+                    }
+                }
+            }
+
+            // After 2.7 seconds, start crawling
+            if (elapsedIdle > 2700) {
                 isCrawling = true;
                 crawlStartTime = Date.now(); 
                 assignStickFigureTargets();
@@ -486,7 +536,12 @@ window.startHeroAnimation = () => {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (!exploded) {
+        // --- NEW RENDER LOGIC FOR THE IDLE/COUNTDOWN STATE ---
+        if (!isCountingDown) {
+            // STATE 1: Waiting for the user to click the button
+            drawIdleName();
+        } else if (!exploded) {
+            // STATE 2: Button clicked! Start the countdown
             countdown = (parseFloat(countdown) - 0.016).toFixed(2);
             if (countdown <= 0) {
                 countdown = 0;
@@ -495,11 +550,8 @@ window.startHeroAnimation = () => {
                 document.body.style.animation = "glitch 0.3s 2"; 
             }
             drawPulsingName();
-            ctx.fillStyle = "#ff003c";
-            ctx.font = 'bold 24px "JetBrains Mono"';
-            ctx.textAlign = "center";
-            ctx.fillText(`DETONATION IN: ${countdown}s`, canvas.width / 2, canvas.height / 2 + 120);
         } else {
+            // STATE 3: Exploded, run the Frankenstein logic
             splatters = splatters.filter(s => s.alpha > 0);
             splatters.forEach(s => {
                 s.update(allLettersStopped);
@@ -511,7 +563,7 @@ window.startHeroAnimation = () => {
                 p.draw();
             });
         }
-        animationFrame = requestAnimationFrame(animate);
+        window.heroAnimationFrame = requestAnimationFrame(animate);    
     }
 
     resize();
