@@ -700,137 +700,137 @@ body.loading .footer {
        transition: opacity 0.4s ease;
    }
    
-   /* --- RADIAL ARROW CROWN --- */
-   .arrow-cluster {
-       position: absolute;
-       top: 50%;
-       left: 50%;
-       width: 0;
-       height: 0;
-       pointer-events: none;
-       z-index: 10;
-   }
-   
-   .arrow-wrap {
-       position: absolute;
-       /* Centers the 35x50 arrow exactly on the origin before translating */
-       top: -25px; 
-       left: -17.5px; 
-       /* Pushes arrows out exactly 160px to clear the new bigger button */
-       transform: rotate(var(--angle)) translateY(-160px);
-   }
-   
-   .arrow-wrap svg {
-       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
-       animation: stab 0.5s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5);
-   }
-   
-   /* Stagger the bouncing animations */
-   .arrow-wrap:nth-child(1) svg { animation-delay: 0.1s; }
-   .arrow-wrap:nth-child(2) svg { animation-delay: 0.4s; }
-   .arrow-wrap:nth-child(3) svg { animation-delay: 0.0s; }
-   .arrow-wrap:nth-child(4) svg { animation-delay: 0.3s; }
-   .arrow-wrap:nth-child(5) svg { animation-delay: 0.1s; }
-   .arrow-wrap:nth-child(6) svg { animation-delay: 0.4s; }
-   .arrow-wrap:nth-child(7) svg { animation-delay: 0.2s; }
-   
-   @keyframes stab {
-       0% { transform: translateY(0); }
-       100% { transform: translateY(15px); } /* Jabs inward towards the button */
-   }
-   
-   /* --- 3D BUTTON PHYSICS (UPSCALED) --- */
-   .button-scene {
-       perspective: 800px;
-   }
-   
-   .button-3d-wrapper {
-       position: relative;
-       width: 200px; /* Scaled up base */
-       height: 200px;
-       transform: rotateX(55deg); 
-       transform-style: preserve-3d;
-   }
-   
-   .button-base {
-       position: absolute;
-       top: 0;
-       left: 0;
-       width: 100%;
-       height: 100%;
-       border-radius: 50%;
-       background: #222; 
-       box-shadow: 
-           0 15px 0 #888, 
-           0 25px 20px rgba(0,0,0,0.8); 
-   }
-   
-   .button-top {
-       position: absolute;
-       top: 10px;
-       left: 10px;
-       width: 180px; /* Scaled up dome */
-       height: 180px;
-       border-radius: 50%;
-       background: radial-gradient(circle at 50% 20%, #ff4d4d, #b30000);
-       box-shadow: 
-           inset 0 -5px 10px rgba(0,0,0,0.3),
-           0 20px 0 #7a0000, 
-           0 25px 15px rgba(0,0,0,0.6);
-       transform: translateY(-25px); 
-       transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.2s ease;
-       border: none;
-       cursor: pointer;
-       outline: none;
-       
-       /* Centers the stencil text inside */
-       display: flex;
-       justify-content: center;
-       align-items: center;
-   }
-   
-   /* THE STENCIL TEXT (It will automatically tilt with the 3D surface!) */
-   .button-top span {
-       font-family: 'Allerta Stencil', 'Impact', sans-serif;
-       font-size: 32px;
-       font-weight: bold;
-       color: #ffffff; /* Bright white */
-       text-align: center;
-       line-height: 0.9;
-       letter-spacing: 1px;
-       text-shadow: 0 2px 4px rgba(0,0,0,0.4);
-       /* Push slightly down to account for the 3D perspective visually */
-       margin-top: 5px; 
-   }
-   
-   /* Hover: The Radioactive Glow */
-   .button-top:hover {
-       background: radial-gradient(circle at 50% 20%, #ff8080, #cc0000); 
-       box-shadow: 
-           inset 0 -5px 10px rgba(0,0,0,0.3),
-           0 20px 0 #7a0000, 
-           0 25px 15px rgba(0,0,0,0.6),
-           0 0 40px rgba(255, 0, 0, 0.8),
-           0 -10px 30px rgba(255, 0, 0, 0.5);
-       animation: button-vibrate 0.15s infinite linear;
-   }
-   
-   @keyframes button-vibrate {
-       0%   { transform: translateY(-25px) translateX(0px); }
-       25%  { transform: translateY(-25px) translateX(-2px); }
-       50%  { transform: translateY(-25px) translateX(2px); }
-       75%  { transform: translateY(-25px) translateX(-2px); }
-       100% { transform: translateY(-25px) translateX(0px); }
-   }
-   
-   /* Active: Sinks into the base */
-   .button-top:active {
-       animation: none; 
-       transform: translateY(-5px); 
-       background: radial-gradient(circle at 50% 20%, #ff4d4d, #990000);
-       box-shadow: 
-           inset 0 -5px 10px rgba(0,0,0,0.3),
-           0 5px 0 #7a0000, 
-           0 10px 10px rgba(0,0,0,0.6),
-           0 0 60px rgba(255, 0, 0, 1); 
-   }
+   /* --- RADIAL ARROW CROWN (OPTIMIZED) --- */
+.arrow-cluster {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.arrow-wrap {
+  position: absolute;
+  top: -25px; 
+  left: -17.5px; 
+  transform: rotate(var(--angle)) translateY(-160px);
+  /* Forces GPU rendering */
+  will-change: transform; 
+}
+
+.arrow-wrap svg {
+  /* REMOVED filter: drop-shadow() because it kills performance */
+  animation: stab 0.5s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5);
+  will-change: transform;
+}
+
+.arrow-wrap:nth-child(1) svg { animation-delay: 0.1s; }
+.arrow-wrap:nth-child(2) svg { animation-delay: 0.4s; }
+.arrow-wrap:nth-child(3) svg { animation-delay: 0.0s; }
+.arrow-wrap:nth-child(4) svg { animation-delay: 0.3s; }
+.arrow-wrap:nth-child(5) svg { animation-delay: 0.1s; }
+.arrow-wrap:nth-child(6) svg { animation-delay: 0.4s; }
+.arrow-wrap:nth-child(7) svg { animation-delay: 0.2s; }
+
+@keyframes stab {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(15px); } 
+}
+
+/* --- 3D BUTTON PHYSICS (OPTIMIZED) --- */
+.button-scene {
+  perspective: 800px;
+}
+
+.button-3d-wrapper {
+  position: relative;
+  width: 200px; 
+  height: 200px;
+  transform: rotateX(55deg); 
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.button-base {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #222; 
+  box-shadow: 
+      0 15px 0 #888, 
+      0 25px 20px rgba(0,0,0,0.8); 
+}
+
+.button-top {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 180px; 
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 20%, #ff4d4d, #b30000);
+  /* STATIC shadow instead of animated shadow */
+  box-shadow: 
+      inset 0 -5px 10px rgba(0,0,0,0.3),
+      0 20px 0 #7a0000, 
+      0 25px 15px rgba(0,0,0,0.6),
+      0 0 30px rgba(255,0,0,0.4); 
+  transform: translateY(-25px); 
+  transition: transform 0.1s ease, filter 0.2s ease;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* Hardware acceleration */
+  will-change: transform, filter;
+  
+  /* CHEAPER GLOW ANIMATION */
+  animation: radioactive-pulse 2s infinite alternate ease-in-out;
+}
+
+.button-top span {
+  font-family: 'Allerta Stencil', 'Impact', sans-serif;
+  font-size: 32px;
+  font-weight: bold;
+  color: #ffffff; 
+  text-align: center;
+  line-height: 0.9;
+  letter-spacing: 1px;
+  margin-top: 5px; 
+  /* Removed heavy text-shadow */
+}
+
+/* Optimized Hover */
+.button-top:hover {
+  background: radial-gradient(circle at 50% 20%, #ff8080, #cc0000); 
+  animation: button-vibrate 0.15s infinite linear;
+  filter: brightness(1.2) drop-shadow(0 0 20px red);
+}
+
+@keyframes radioactive-pulse {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.3); }
+}
+
+@keyframes button-vibrate {
+  0%   { transform: translateY(-25px) translateX(0px); }
+  25%  { transform: translateY(-25px) translateX(-2px); }
+  50%  { transform: translateY(-25px) translateX(2px); }
+  75%  { transform: translateY(-25px) translateX(-2px); }
+  100% { transform: translateY(-25px) translateX(0px); }
+}
+
+.button-top:active {
+  animation: none; 
+  transform: translateY(-5px); 
+  background: radial-gradient(circle at 50% 20%, #ff4d4d, #990000);
+  filter: brightness(0.9);
+}

@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Game | Daniel Han</title>
+  <link rel="icon" type="image/png" href="images/f1zzyicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1"></script>
+  <meta http-equiv="Content-Security-Policy" content="
+  default-src 'self'; 
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; 
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+  font-src 'self' https://fonts.gstatic.com; 
+  connect-src 'self' https://vefnwnxghpcgajiurufx.supabase.co; 
+  img-src 'self' data:;
+">
+  <style>
+
+.header-cursor {
+      color: var(--accent);
+      margin-left: 4px;
+      animation: opacityBlink 1s step-end infinite;
+    }
+    @keyframes opacityBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .typing-section-wrapper { max-width: 1000px; margin: 0 auto; width: 90%; }
+    
+    .dashboard-wrapper {
+      max-width: 1500px; 
+      width: 95%;
+      margin: 4rem auto 0;
+    }
+
+    .typing-container {
+      background: rgba(20, 20, 20, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3rem;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      position: relative;
+      outline: none;
+      overflow: hidden;
+    }
+    .test-controls {
+      display: flex;
+      justify-content: space-between; 
+      align-items: flex-end;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .username-wrapper { display: flex; flex-direction: column; gap: 4px; }
+    .username-label { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; }
+    .username-input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      padding: 10px 16px;
+      border-radius: 6px;
+      width: 250px;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+    .username-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 255, 65, 0.1); }
+    
+    .username-input.error { border-color: #ff003c; animation: shake 0.4s; box-shadow: 0 0 0 3px rgba(255, 0, 60, 0.1); }
+    .username-input.success { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 255, 65, 0.1); }
+    
+    .public-hint {
+      color: var(--accent);
+      font-size: 0.75rem;
+      opacity: 0.8;
+      font-style: italic;
+      display: block;
+      margin-bottom: 2.5rem;
+      min-height: 15px;
+    }
+
+    .toggle-container { display: flex; align-items: center; gap: 12px; }
+    .toggle-label { color: var(--text-secondary); font-size: 0.95rem; }
+    .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1); transition: .4s; border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background-color: var(--text-secondary); transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(22px); background-color: #000; }
+    .typing-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr; 
+      margin-bottom: 2.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .stat-box { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .stat-title { color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; }
+    .stat-value { color: var(--text-primary); font-family: var(--font-mono); font-size: 1.5rem; }
+    .stat-value.highlight { color: var(--accent); font-size: 2.2rem; }
+    .typing-text-display {
+      font-size: 1.5rem; line-height: 1.8; color: #444; 
+      margin-bottom: 3rem; user-select: none; font-weight: 500; min-height: 120px;
+    }
+    .typing-text-display span { position: relative; }
+    .typing-text-display span.correct { color: var(--text-primary); }
+    .typing-text-display span.incorrect {
+      color: #ff003c; background: rgba(255, 0, 60, 0.15); border-bottom: 2px solid #ff003c;
+    }
+    .typing-text-display span.active {
+      border-left: 3px solid var(--accent); 
+      animation: boredBlink 1s infinite; 
+      margin-left: -3px; 
+    }
+    .typing-text-display span.race-active::before {
+      content: ''; position: absolute; left: -2px; top: 10%; height: 80%; width: 2px;
+      background-color: #4a2e1b; box-shadow: 0 0 8px rgba(74, 46, 27, 0.8); z-index: 10;
+    }
+    
+    .typing-input { position: absolute; top: 0; left: 0; opacity: 0; pointer-events: none; }
+    
+    .restart-btn {
+      background: rgba(255, 255, 255, 0.05); color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 24px; cursor: pointer;
+      border-radius: 6px; display: block; margin: 0 auto; width: 200px; transition: 0.2s;
+    }
+    .restart-btn:hover { background: var(--accent); color: #000; }
+
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 1000px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+    }
+
+    .graph-wrapper {
+      background: rgba(20, 20, 20, 0.4);
+      padding: 2rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+
+    .hof-wrapper {
+      background: rgba(20, 20, 20, 0.4);
+      padding: 2rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);
+      height: 100%;
+    }
+    .hof-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .hof-grid::-webkit-scrollbar { width: 6px; }
+    .hof-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    .hof-grid::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.3); border-radius: 4px; }
+    .hof-grid::-webkit-scrollbar-thumb:hover { background: rgba(255,215,0,0.6); }
+
+    .hof-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hof-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.1);
+      border-color: rgba(255, 215, 0, 0.4);
+    }
+    .hof-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; gap: 10px; }
+    
+    .hof-name { 
+      color: #fff; 
+      font-weight: 500; 
+      font-family: var(--font-mono); 
+      word-break: break-word; 
+    }
+    
+    .hof-score { color: #ffd700; font-weight: 700; font-family: var(--font-mono); font-size: 1.1rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4); flex-shrink: 0; }
+    .hof-date { font-size: 0.75rem; color: rgba(255, 255, 255, 0.4); font-family: var(--font-mono); }
+    .hof-empty { text-align: center; color: var(--text-secondary); width: 100%; font-style: italic; padding: 2rem 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; }
+
+    @keyframes borderBlink { 0%, 100% { border-color: var(--accent); } 50% { border-color: transparent; } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="index.html"><div class="nav-logo nav-glitch" data-text="> Daniel Han">&gt; Daniel Han</div></a>
+      <div class="nav-links">
+        <a href="index.html#about" class="hacker-text" data-value="About">About</a>
+        <a href="index.html#education" class="hacker-text" data-value="Education">Education</a>
+        <a href="index.html#experience" class="hacker-text" data-value="Experience">Experience</a>
+        <a href="blog.html" class="hacker-text" data-value="Blog">Blog</a>
+        <a href="misc.html" class="hacker-text active" data-value="Misc">Misc</a>
+        <a href="index.html#contact" class="hacker-text" data-value="Contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section" style="padding-top: 150px;">
+    <div class="container typing-section-wrapper">
+      <h2 class="section-title hacker-text" data-value="> Fast Fingered?">&gt; Fast Fingered?</h2>
+      
+      <div style="margin-bottom: 3rem;">
+        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.8rem; display: flex; align-items: center;">
+            <span id="animated-header-text"></span><span class="header-cursor">_</span>
+        </h3>
+        <p style="color: var(--text-secondary); line-height: 1.6;">
+            My best recorded pace so far is <strong id="daniel-score-text" style="color: #ffd700;">... WPM</strong><span id="daniel-date-text" style="opacity: 0.7; font-size: 0.9em;"></span>. 
+            Beat my score to forever earn a spot on my digital Hall of Fame. <br><br>Note: High scores are published to the performance graph below.
+        </p>
+      </div>
+
+      <div class="typing-container" id="typing-test" tabindex="0">
+        <div class="test-controls">
+          <div class="username-wrapper">
+            <label class="username-label">Display Username:</label>
+            <input type="text" id="username-input" class="username-input" placeholder="Your Username" maxlength="15" autocomplete="off">
+          </div>
+          
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+            <span id="race-hint-text" style="font-size: 0.75rem; color: var(--text-secondary); font-style: italic; opacity: 0.8;">Turn this off if distracting</span>
+            <div class="toggle-container" style="margin-top: 0;">
+                <span class="toggle-label" id="daniel-toggle-text">Race Me (... WPM)</span>
+                <label class="switch"><input type="checkbox" id="race-switch" checked><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <span id="sync-status" class="public-hint"></span>
+        
+        <div class="typing-stats">
+          <div class="stat-box"><span class="stat-title">Accuracy</span><span class="stat-value" id="acc-display">100%</span></div>
+          <div class="stat-box"><span class="stat-title">Speed</span><span class="stat-value highlight" id="wpm-display">0 WPM</span></div>
+          <div class="stat-box"><span class="stat-title">Time</span><span class="stat-value" id="time-display">0.00s</span></div>
+        </div>
+        
+        <div class="typing-text-display" id="text-display"></div>
+        <input type="text" class="typing-input" id="hidden-input">
+        <button class="restart-btn" id="restart-btn">Restart</button>
+      </div>
+    </div>
+
+    <div class="dashboard-wrapper">
+      <div class="dashboard-layout">
+          
+          <div class="graph-wrapper">
+            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; text-align: center;">Typing Percentile Curve</h3>
+            <p style="color: var(--text-secondary); text-align: center; font-size: 0.85rem; margin-bottom: 1.5rem;">How do you stack up against my website visitors?</p>
+            <div style="height:400px; width:100%; position: relative;" id="canvas-container">
+              <canvas id="performanceChart"></canvas>
+            </div>
+          </div>
+
+          <div class="hof-wrapper">
+            <h3 style="color: #ffd700; margin-bottom: 0.5rem; text-align: center; font-size: 1.5rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);">HALL OF FAME</h3>
+            <p style="color: var(--text-secondary); text-align: center; font-size: 0.8rem;">A list of all the fast(er)-fingered typists.</p>
+            <div id="hof-list" class="hof-grid">
+              </div>
+          </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div id="terminal-overlay" class="terminal-overlay" style="display: none; background: transparent; z-index: 9998; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; align-items: center; justify-content: center;">
+    
+    <div class="terminal-window" style="transform: scale(1); opacity: 1;">
+      <div class="terminal-header">
+      </div>
+      <div class="terminal-body" id="terminal-content"></div>
+    </div>
+    
+  </div>
+
+  <div id="malware-overlay" class="malware-overlay">
+    <div class="malware-corruption"></div>
+    <div class="malware-modal">
+      <h2 class="malware-title">Are You Still Browsing?</h2>
+      <p>You have been inactive for some time.</p>
+      <p>You will be signed out soon to keep the connection safe.</p>
+      <div class="countdown-container">
+        <span id="malware-countdown">60</span><span>s until connection drop...</span>
+      </div>
+      <button id="malware-yes-btn" class="malware-btn">[CONTINUE]</button>
+    </div>
+  </div>
+
+
+  <script>
+    // --- TYPING TEST SUPABASE & CHART LOGIC ---
+    const _supabaseUrl = 'https://vefnwnxghpcgajiurufx.supabase.co';
+    const _supabaseKey = 'sb_publishable_hcvPkj-rK8vtA1hI1TZF4g_pufYZQLk';
+    const _db = supabase.createClient(_supabaseUrl, _supabaseKey);
+    const promptText = "Stumble. Because you will fall. You will faceplant in front of random people and even those you are trying so hard to impress. You turn into a hot honey chicken tender, burning with shameful, red, and oily tears. It burns. But learn how to sit in that fire. Laugh because you fell. Laugh until it almost feels masochistic. There is simply no time to overthink the pain.";
+    
+    const starCanvas = document.createElement('canvas');
+    starCanvas.width = 40;
+    starCanvas.height = 40;
+    const sCtx = starCanvas.getContext('2d');
+    
+    function drawSparkle(ctx, cx, cy, size) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - size);
+        ctx.quadraticCurveTo(cx, cy, cx + size, cy);
+        ctx.quadraticCurveTo(cx, cy, cx, cy + size);
+        ctx.quadraticCurveTo(cx, cy, cx - size, cy);
+        ctx.closePath();
+    }
+    
+    const grad1 = sCtx.createRadialGradient(20, 20, 0, 20, 20, 20);
+    grad1.addColorStop(0, 'rgba(255, 215, 0, 0.7)');
+    grad1.addColorStop(1, 'rgba(255, 215, 0, 0)');
+    sCtx.fillStyle = grad1;
+    sCtx.fillRect(0, 0, 40, 40);
+    
+    sCtx.fillStyle = '#ffd700';
+    drawSparkle(sCtx, 20, 20, 14);
+    sCtx.fill();
+    
+    sCtx.fillStyle = '#ffffff';
+    drawSparkle(sCtx, 20, 20, 6);
+    sCtx.fill();
+
+    const starCanvasHover = document.createElement('canvas');
+    starCanvasHover.width = 70;
+    starCanvasHover.height = 70;
+    const hCtx = starCanvasHover.getContext('2d');
+    
+    const grad2 = hCtx.createRadialGradient(35, 35, 0, 35, 35, 35);
+    grad2.addColorStop(0, 'rgba(255, 215, 0, 0.9)');
+    grad2.addColorStop(1, 'rgba(255, 215, 0, 0)');
+    hCtx.fillStyle = grad2;
+    hCtx.fillRect(0, 0, 70, 70);
+    
+    hCtx.fillStyle = '#ffd700';
+    drawSparkle(hCtx, 35, 35, 26); 
+    hCtx.fill();
+    
+    hCtx.fillStyle = '#ffffff';
+    drawSparkle(hCtx, 35, 35, 10);
+    hCtx.fill();
+
+    const display = document.getElementById('text-display'), input = document.getElementById('hidden-input');
+    const wpmDisplay = document.getElementById('wpm-display'), accDisplay = document.getElementById('acc-display'), timeDisplay = document.getElementById('time-display');
+    const restartBtn = document.getElementById('restart-btn'), typingContainer = document.getElementById('typing-test');
+    const usernameInput = document.getElementById('username-input'), syncStatus = document.getElementById('sync-status');
+    const raceSwitch = document.getElementById('race-switch'), raceHintText = document.getElementById('race-hint-text');
+    
+    let characters = [], charIndex = 0, mistakes = 0, timerInterval = null, startTime = null, isTyping = false;
+    let raceIndex = 0, raceTimeout = null, ghostDelays = [], performanceChart = null;
+    let myWPM = 100;
+    let baseRaceSpeedMs = 60000 / (myWPM * 5); 
+
+    usernameInput.addEventListener('input', (e) => {
+        if (e.target.value.trim().length > 0) {
+            e.target.classList.remove('error');
+            e.target.classList.add('success');
+        } else {
+            e.target.classList.remove('success');
+        }
+    });
+
+    raceSwitch.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            raceHintText.innerText = "Turn this off if distracting";
+        } else {
+            raceHintText.innerText = "Turn this on if competitive";
+        }
+    });
+
+    async function fetchDanielScore() {
+      const { data, error } = await _db
+        .from('typing_scores')
+        .select('wpm, created_at')
+        .eq('username', 'f1zzy22')
+        .order('wpm', { ascending: false })
+        .limit(1);
+        
+      if (data && data.length > 0) {
+        myWPM = data[0].wpm;
+        baseRaceSpeedMs = 60000 / (myWPM * 5);
+        
+        const d = new Date(data[0].created_at);
+        if (!isNaN(d.getTime())) {
+            const dateString = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('daniel-date-text').innerText = ` (as of ${dateString})`;
+        }
+      }
+      
+      document.getElementById('daniel-score-text').innerText = `${myWPM} WPM`;
+      document.getElementById('daniel-toggle-text').innerText = `Race Me (${myWPM} WPM)`;
+    }
+
+    function initTest() {
+      charIndex = 0; raceIndex = 0; mistakes = 0; isTyping = false; startTime = null;
+      clearInterval(timerInterval); clearTimeout(raceTimeout);
+      wpmDisplay.innerText = "0 WPM"; accDisplay.innerText = "100%"; timeDisplay.innerText = "0.00s";
+      
+      syncStatus.innerText = ""; 
+      syncStatus.style.color = "var(--accent)";
+
+      input.value = ""; display.innerHTML = "";
+      promptText.split('').forEach(char => {
+        let span = document.createElement('span'); span.innerText = char; display.appendChild(span);
+      });
+      characters = display.querySelectorAll('span');
+      if(characters.length > 0) characters[0].classList.add('active');
+    }
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        let elapsed = (Date.now() - startTime) / 1000;
+        timeDisplay.innerText = `${elapsed.toFixed(2)}s`;
+        let wpm = Math.round(((charIndex - mistakes) / 5) / (elapsed / 60));
+        wpmDisplay.innerText = (wpm < 0 || !wpm ? 0 : wpm) + " WPM";
+      }, 50);
+      if (raceSwitch.checked) {
+        let rawDelays = [], phase = 0, oscillations = 2.5;
+        let phaseStep = (Math.PI * 2 * oscillations) / characters.length;
+        for (let i = 0; i < characters.length; i++) {
+          rawDelays.push(1 + (Math.sin(phase) * 0.3) + ((Math.random() * 0.1) - 0.05));
+          phase += phaseStep;
+        }
+        let scale = (characters.length * baseRaceSpeedMs) / rawDelays.reduce((a,b)=>a+b,0);
+        ghostDelays = rawDelays.map(d => d * scale);
+        const advanceGhost = () => {
+          if (raceIndex < characters.length) {
+            if (raceIndex > 0) characters[raceIndex - 1].classList.remove('race-active');
+            characters[raceIndex].classList.add('race-active');
+            raceTimeout = setTimeout(advanceGhost, ghostDelays[raceIndex++]);
+          }
+        };
+        advanceGhost();
+      }
+    }
+
+    typingContainer.addEventListener('mousedown', (e) => {
+      if (e.target !== usernameInput && e.target !== raceSwitch) {
+          setTimeout(() => input.focus({ preventScroll: true }), 10);
+      }
+    });
+
+    input.addEventListener('input', (e) => {
+      if (!usernameInput.value.trim()) { 
+          usernameInput.classList.remove('success');
+          usernameInput.classList.add('error'); 
+          return; 
+      }
+      
+      usernameInput.classList.remove('error');
+      usernameInput.classList.add('success');
+
+      if (e.inputType === 'insertFromPaste' || (input.value.length - charIndex) > 1) { initTest(); return; }
+      if (!isTyping) { startTimer(); isTyping = true; }
+      let typedChar = input.value.split('')[charIndex];
+      if (typedChar == null) {
+        charIndex--;
+        if (characters[charIndex].classList.contains('incorrect')) mistakes--;
+        characters[charIndex].classList.remove('correct', 'incorrect');
+      } else {
+        if (characters[charIndex].innerText === typedChar) characters[charIndex].classList.add('correct');
+        else { mistakes++; characters[charIndex].classList.add('incorrect'); }
+        charIndex++;
+      }
+      characters.forEach(s => s.classList.remove('active'));
+      if (charIndex < characters.length) characters[charIndex].classList.add('active');
+      else finishTest();
+      let acc = Math.round(((charIndex - mistakes) / charIndex) * 100);
+      accDisplay.innerText = `${!acc ? 100 : acc}%`;
+    });
+
+    function getPersonalBests(rawData) {
+      if (!rawData || rawData.length === 0) return [];
+      const pbs = {};
+      rawData.forEach(row => {
+        if (!pbs[row.username] || row.wpm > pbs[row.username]) pbs[row.username] = row.wpm;
+      });
+      return Object.entries(pbs).map(([username, wpm]) => ({ username, wpm })).sort((a, b) => a.wpm - b.wpm);
+    }
+
+    function processChartData(pbData) {
+      const total = pbData.length;
+      return pbData.map((d, index) => {
+        let percentile = total > 1 ? (index / (total - 1)) * 100 : 100;
+        return { x: percentile, y: d.wpm, user: d.username };
+      });
+    }
+
+    function getOrdinalSuffix(i) {
+        let j = i % 10, k = i % 100;
+        if (j == 1 && k != 11) return i + "st";
+        if (j == 2 && k != 12) return i + "nd";
+        if (j == 3 && k != 13) return i + "rd";
+        return i + "th";
+    }
+
+    function renderHallOfFame(data) {
+        const hofList = document.getElementById('hof-list');
+        hofList.innerHTML = ''; 
+
+        const winners = {};
+        data.forEach(row => {
+            if (row.is_beat_daniel && row.username !== 'f1zzy22') {
+                if (!winners[row.username] || row.wpm > winners[row.username].wpm) {
+                    winners[row.username] = { wpm: row.wpm, date: row.created_at };
+                }
+            }
+        });
+
+        const sortedWinners = Object.entries(winners).sort((a, b) => b[1].wpm - a[1].wpm);
+
+        if (sortedWinners.length === 0) {
+            hofList.innerHTML = '<div class="hof-empty"> The throne remains unchallenged... too fast for y\'all, huh? <br><br> Be the first to beat me if you can ;) </div>';
+            return;
+        }
+
+        sortedWinners.forEach(([uname, info]) => {
+            const card = document.createElement('div');
+            card.className = 'hof-card';
+            
+            const header = document.createElement('div');
+            header.className = 'hof-header';
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'hof-name';
+            nameSpan.textContent = uname; 
+
+            const scoreSpan = document.createElement('span');
+            scoreSpan.className = 'hof-score';
+            scoreSpan.textContent = `${info.wpm} WPM`;
+
+            const dateSpan = document.createElement('span');
+            dateSpan.className = 'hof-date';
+            
+            const d = new Date(info.date);
+            if (!isNaN(d.getTime())) {
+                dateSpan.textContent = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+
+            header.appendChild(nameSpan);
+            header.appendChild(scoreSpan);
+            card.appendChild(header);
+            card.appendChild(dateSpan);
+            hofList.appendChild(card);
+        });
+    }
+
+    async function finishTest() {
+      clearInterval(timerInterval); clearTimeout(raceTimeout); input.blur();
+      const wpm = parseInt(wpmDisplay.innerText), acc = parseInt(accDisplay.innerText);
+      
+      let rawUsername = usernameInput.value.trim();
+      const username = rawUsername.replace(/[<>]/g, "").substring(0, 15);
+      
+      if (!username || wpm > 250 || acc < 30) { 
+          syncStatus.innerText = "Integrity check failed."; 
+          syncStatus.style.color = "#ff003c";
+          return; 
+      }
+      
+      syncStatus.innerText = "Publishing to global performance graph...";
+      syncStatus.style.color = "var(--accent)";
+      
+      const { error } = await _db.from('typing_scores').insert([{ 
+        username, wpm, accuracy: acc, is_beat_daniel: wpm > myWPM 
+      }]);
+      
+      if (!error) { 
+        syncStatus.innerText = "Score live on global graph.";
+        if (username === 'f1zzy22') await fetchDanielScore();
+        updateChart(username); 
+      } else { 
+        syncStatus.innerText = "Sync failed."; 
+        syncStatus.style.color = "#ff003c";
+        console.error("SUPABASE REJECTED IT:", error); 
+      }
+    }
+
+    async function initChart() {
+      const { data } = await _db.from('typing_scores').select('wpm, username, is_beat_daniel, created_at');
+      const ctx = document.getElementById('performanceChart').getContext('2d');
+      const fillGradient = ctx.createLinearGradient(0, 400, 0, 0);
+      fillGradient.addColorStop(0, 'rgba(0, 255, 65, 0)');
+      fillGradient.addColorStop(1, 'rgba(0, 255, 65, 0.2)');
+      const pbData = getPersonalBests(data);
+      const chartData = processChartData(pbData);
+
+      renderHallOfFame(data);
+
+      performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: { 
+          datasets: [{
+            label: 'Global Rank', 
+            data: chartData,
+            borderColor: '#00ff41',
+            borderWidth: 2,
+            backgroundColor: fillGradient,
+            fill: true,
+            tension: 0.4,
+            
+            pointStyle: (context) => {
+                if (!context.raw) return 'circle';
+                if (context.raw.user === 'f1zzy22') {
+                    return context.active ? starCanvasHover : starCanvas;
+                }
+                return 'circle';
+            },
+            pointRadius: (context) => {
+                if (!context.raw) return 4;
+                return context.raw.user === 'f1zzy22' ? 20 : 4; 
+            },
+            pointHoverRadius: (context) => {
+                if (!context.raw) return 10;
+                return context.raw.user === 'f1zzy22' ? 35 : 10; 
+            },
+            pointBackgroundColor: (context) => {
+                if (!context.raw) return 'rgba(0, 255, 65, 0.4)';
+                if (context.raw.user === 'f1zzy22') return '#ffd700';
+                if (context.raw.y > myWPM) return '#ffffff';
+                return 'rgba(0, 255, 65, 0.4)';
+            },
+            pointBorderColor: (context) => {
+                if (!context.raw) return 'rgba(0, 255, 65, 0.4)';
+                if (context.raw.user === 'f1zzy22') return '#ffd700';
+                if (context.raw.y > myWPM) return '#ffffff';
+                return 'rgba(0, 255, 65, 0.4)';
+            },
+            pointHoverBorderWidth: 3, 
+          }]
+        },
+        options: {
+          responsive: true, 
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: { 
+              type: 'linear', min: 0, max: 100,
+              title: { display: true, text: 'Percentile (%)', color: '#888', font: { family: 'JetBrains Mono', size: 12 } },
+              grid: { display: false },
+              ticks: { color: '#555', font: { family: 'JetBrains Mono' } }
+            },
+            y: { 
+              beginAtZero: true, 
+              min: 0, 
+              title: { display: true, text: 'Speed (WPM)', color: '#888', font: { family: 'JetBrains Mono', size: 12 } },
+              grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+              ticks: { color: '#555', font: { family: 'JetBrains Mono' } }
+            }
+          },
+          hover: {
+            mode: 'nearest',
+            intersect: true,
+            onHover: (event, chartElement) => {
+              event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+            }
+          },
+          plugins: { 
+            legend: { display: false },
+            tooltip: {
+  enabled: true,
+  position: 'nearest',
+  backgroundColor: 'rgba(20, 20, 20, 0.95)',
+  borderColor: 'rgba(255, 255, 255, 0.1)',
+  borderWidth: 1,
+  padding: 12,
+  displayColors: false,
+  yAlign: 'bottom', 
+  caretPadding: 15,
+  
+  // Style the Username (Title)
+  titleFont: { family: 'JetBrains Mono', size: 14, weight: 'bold' },
+  titleColor: (context) => {
+    // Dynamically color the title based on the user
+    const user = context.tooltip.dataPoints?.[0]?.raw?.user;
+    return user === 'f1zzy22' ? '#ffd700' : '#00ff41'; 
+  },
+  
+  // Style the Stats (Body)
+  bodyFont: { family: 'JetBrains Mono', size: 13 },
+  bodyColor: '#e0e0e0', // Slightly dimmed white for hierarchy
+  
+  callbacks: { 
+  // Keep the username as the title
+  title: (c) => c[0].raw.user, 
+  
+  // Convert percentile to "Top X%"
+  label: (c) => {
+    const percentile = c.raw.x; // Assuming x is the raw percentile (0-100)
+    let topPct = 100 - percentile;
+
+    if (topPct <= 0.01) topPct = 0.01;
+    if (topPct >= 99.99) topPct = 99.99;
+
+    // toFixed(2) keeps the precision for 0.01, and parseFloat strips trailing zeros for whole numbers (e.g., 5.00 becomes 5)
+    const displayPct = parseFloat(topPct.toFixed(2));
+
+    return `${c.raw.y} WPM (top ${displayPct}%)`;
+  }
+}
+},
+            annotation: {
+              annotations: {
+                danielLine: {
+                  type: 'line', 
+                  yMin: myWPM, 
+                  yMax: myWPM, 
+                  borderColor: 'rgba(255, 215, 0, 0.5)',
+                  borderWidth: 1, 
+                  label: {
+                    display: true,
+                    content: `DANIEL [f1zzy22]: ${myWPM} WPM`,
+                    position: 'start',
+                    xAdjust: 10,
+                    yAdjust: -12,
+                    backgroundColor: 'transparent',
+                    color: 'rgba(255, 215, 0, 0.9)',
+                    font: { size: 12, family: 'JetBrains Mono', weight: '500' }
+                  }
+                },
+                userLine: {
+                  type: 'line', 
+                  display: false, 
+                  yMin: 0, 
+                  yMax: 0, 
+                  borderColor: 'rgba(0, 255, 65, 0.5)', 
+                  borderWidth: 1, 
+                  label: {
+                    display: false,
+                    content: '',
+                    position: 'start',
+                    xAdjust: 10,
+                    yAdjust: -12,
+                    backgroundColor: 'transparent',
+                    color: 'rgba(0, 255, 65, 0.9)',
+                    font: { size: 12, family: 'JetBrains Mono', weight: '500' }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    async function updateChart(newUsername) {
+      const { data } = await _db.from('typing_scores').select('wpm, username, is_beat_daniel, created_at');
+      const pbData = getPersonalBests(data);
+      const chartData = processChartData(pbData);
+      
+      renderHallOfFame(data);
+
+      performanceChart.data.datasets[0].data = chartData;
+      
+      const danielLabel = performanceChart.options.plugins.annotation.annotations.danielLine.label;
+      performanceChart.options.plugins.annotation.annotations.danielLine.yMin = myWPM;
+      performanceChart.options.plugins.annotation.annotations.danielLine.yMax = myWPM;
+      danielLabel.content = `f1zzy22: ${myWPM} WPM`;
+
+      if (newUsername && newUsername !== 'f1zzy22') {
+        const userPoint = chartData.find(d => d.user === newUsername);
+        if (userPoint) {
+            const userLine = performanceChart.options.plugins.annotation.annotations.userLine;
+            userLine.display = true;
+            userLine.yMin = userPoint.y;
+            userLine.yMax = userPoint.y;
+            
+            // --- UPDATED COLORS TO WHITE ---
+            userLine.borderColor = '#ffffff'; 
+            userLine.label.display = true;
+            userLine.label.color = '#ffffff'; 
+            userLine.label.content = `You [${newUsername}]: ${userPoint.y} WPM`;
+
+            // Collision logic for labels
+            if (Math.abs(userPoint.y - myWPM) <= 15) {
+                if (userPoint.y >= myWPM) {
+                    userLine.label.yAdjust = -12;
+                    danielLabel.yAdjust = 16;
+                } else {
+                    danielLabel.yAdjust = -12;
+                    userLine.label.yAdjust = 16;
+                }
+            } else {
+                danielLabel.yAdjust = -12;
+                userLine.label.yAdjust = -12;
+            }
+        }
+      } else {
+          danielLabel.yAdjust = -12;
+          performanceChart.options.plugins.annotation.annotations.userLine.display = false;
+      }
+
+      performanceChart.update();
+    }
+
+    async function typeHeaderTypoEffect() {
+        const textSpan = document.getElementById('animated-header-text');
+        if (!textSpan) return;
+
+        const part1 = "Can Yo Type Fster THan";
+        const deletes = 16; // Deletes "ster THan"
+        const part2 = "u Type Faster Than Me?";
+
+        // 1. Type the mistake out normally
+        for (let i = 0; i < part1.length; i++) {
+            textSpan.textContent += part1[i];
+            // Random delay between 40ms and 90ms for realistic human pacing
+            await new Promise(r => setTimeout(r, Math.random() * 50 + 40));
+        }
+
+        // 2. Pause (The "Wait, I messed up" realization)
+        await new Promise(r => setTimeout(r, 600));
+
+        // 3. Mash the backspace key
+        for (let i = 0; i < deletes; i++) {
+            textSpan.textContent = textSpan.textContent.slice(0, -1);
+            // Fast backspace speed
+            await new Promise(r => setTimeout(r, 30)); 
+        }
+
+        // 4. Slight pause before correcting
+        await new Promise(r => setTimeout(r, 300));
+
+        // 5. Type the correct ending
+        for (let i = 0; i < part2.length; i++) {
+            textSpan.textContent += part2[i];
+            await new Promise(r => setTimeout(r, Math.random() * 50 + 40));
+        }
+    }
+
+    restartBtn.addEventListener('click', initTest);
+    window.onload = async () => { 
+      await fetchDanielScore();
+      initTest(); 
+      initChart(); 
+      typeHeaderTypoEffect();
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script>
+    // --- EXACT ORIGINAL MATRIX RAIN FUNCTION ---
+    const overlay = document.getElementById('terminal-overlay');
+    let matrixInterval;
+
+    function startMatrixRain() {
+        if (!overlay) return;
+        if (matrixInterval) clearInterval(matrixInterval); // Prevent doubles
+
+        let matrixCanvas = document.getElementById('matrix-canvas');
+        if (!matrixCanvas) {
+            matrixCanvas = document.createElement('canvas');
+            matrixCanvas.id = 'matrix-canvas';
+            matrixCanvas.style.position = 'absolute';
+            matrixCanvas.style.top = '0';
+            matrixCanvas.style.left = '0';
+            matrixCanvas.style.width = '100%';
+            matrixCanvas.style.height = '100%';
+            matrixCanvas.style.zIndex = '0'; 
+            matrixCanvas.style.pointerEvents = 'none';
+            overlay.prepend(matrixCanvas);
+        }
+
+        const ctx = matrixCanvas.getContext('2d');
+        let w = matrixCanvas.width = window.innerWidth;
+        let h = matrixCanvas.height = window.innerHeight;
+
+        const cols = Math.floor(w / 20) + 1;
+        const yPos = Array(cols).fill(0);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+            ctx.fillRect(0, 0, w, h);
+            ctx.font = '14pt "JetBrains Mono", monospace';
+            
+            yPos.forEach((y, ind) => {
+                const text = Math.random() > 0.5 ? '1' : '0'; 
+                const colorChance = Math.random();
+                
+                if (colorChance > 0.98) {
+                    ctx.fillStyle = 'rgba(255, 0, 193, 0.6)';  // Hot Pink
+                } else if (colorChance > 0.93) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // White
+                } else if (colorChance > 0.78) {
+                    ctx.fillStyle = 'rgba(0, 212, 255, 0.3)';   // Blue
+                } else {
+                    ctx.fillStyle = 'rgba(0, 255, 65, 0.3)';    // Hacker Green
+                }
+                
+                const x = ind * 20;
+                ctx.fillText(text, x, y);
+                
+                if (y > 100 + Math.random() * 10000) yPos[ind] = 0;
+                else yPos[ind] = y + 20;
+            });
+        }
+        matrixInterval = setInterval(drawMatrix, 50); 
+    }
+
+    // --- YOUR EXACT INACTIVITY MALWARE TIMEOUT ---
+    const inactivityLimit = 60 * 1000; // 60 seconds
+    let inactivityTimer;
+    let countdownInterval;
+    let isMalwareActive = false;
+    let timeLeft = 60;
+
+    const malwareOverlay = document.getElementById('malware-overlay');
+    const countdownDisplay = document.getElementById('malware-countdown');
+    const yesBtn = document.getElementById('malware-yes-btn');
+    const terminalContent = document.getElementById('terminal-content');
+    const terminalWindow = document.querySelector('.terminal-window');
+
+    function resetInactivityTimer() {
+        if (isMalwareActive) return; 
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(triggerMalware, inactivityLimit);
+    }
+
+    function triggerMalware() {
+        isMalwareActive = true;
+        timeLeft = 60;
+        if(countdownDisplay) countdownDisplay.innerText = timeLeft;
+        if(malwareOverlay) malwareOverlay.classList.add('active');
+        
+        countdownInterval = setInterval(() => {
+            timeLeft--;
+            if(countdownDisplay) countdownDisplay.innerText = timeLeft;
+            
+            if (timeLeft <= 0) {
+                triggerSessionExpired();
+            }
+        }, 1000);
+    }
+
+    function triggerSessionExpired() {
+        clearInterval(countdownInterval);
+        if(malwareOverlay) malwareOverlay.classList.remove('active');
+        
+        document.querySelector('.nav').style.display = 'none';
+        document.querySelector('.section').style.display = 'none';
+        
+        document.body.classList.add('loading');
+        
+        if (typeof gsap !== 'undefined' && terminalWindow && overlay) {
+            gsap.killTweensOf([terminalWindow, overlay]);
+            gsap.set(overlay, { display: 'flex', opacity: 1 });
+            gsap.set(terminalWindow, { scale: 1, x: "0vw", y: "0vh", rotation: 0, opacity: 1 });
+        } else if (overlay) {
+            overlay.style.display = 'flex';
+        }
+
+        if (terminalContent) {
+            terminalContent.innerHTML = `
+                <span class="cmd-user">guest@daniel-han-portfolio</span>:<span class="cmd-path">~</span>$ connection_status<br>
+                <span class="cmd-error">Connection closed by remote host.</span><br>
+                <span class="cmd-error">Session expired. Idle state detected.</span><br><br>
+                <span class="cmd-user">guest@daniel-han-portfolio</span>:<span class="cmd-path">~</span>$ Please refresh the page to establish a new secure connection.<span class="cmd-input"></span>
+            `;
+        }
+
+        startMatrixRain();
+    }
+
+    if (yesBtn) {
+        yesBtn.addEventListener('click', () => {
+            isMalwareActive = false;
+            clearInterval(countdownInterval);
+            if(malwareOverlay) malwareOverlay.classList.remove('active');
+            resetInactivityTimer();
+        });
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(evt => {
+        window.addEventListener(evt, resetInactivityTimer);
+    });
+
+    resetInactivityTimer();
+
+    // --- HACKER TEXT HOVER EFFECT ---
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+";
+    const hackerTexts = document.querySelectorAll(".hacker-text");
+
+    hackerTexts.forEach(element => {
+        element.onmouseover = event => {
+            let iteration = 0;
+            clearInterval(event.target.interval);
+            event.target.interval = setInterval(() => {
+                event.target.innerText = event.target.innerText
+                    .split("")
+                    .map((letter, index) => {
+                        if (index < iteration) return event.target.dataset.value[index];
+                        return letters[Math.floor(Math.random() * letters.length)];
+                    })
+                    .join("");
+                if (iteration >= event.target.dataset.value.length) clearInterval(event.target.interval);
+                iteration += 1 / 3;
+            }, 30);
+        };
+    });
+
+  </script>
+</body>
+</html>

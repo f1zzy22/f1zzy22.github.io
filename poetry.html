@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poetry | Daniel Han</title>
+  <link rel="icon" type="image/png" href="images/f1zzyicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    .poetry-container { max-width: 800px; margin: 0 auto; width: 90%; padding-top: 150px; }
+    .poem-entry {
+        border-left: 2px solid var(--accent);
+        padding-left: 1.5rem;
+        margin-bottom: 4rem;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+    }
+    .poem-entry:hover { opacity: 1; }
+    .poem-title { color: #fff; font-size: 1.4rem; margin-bottom: 1rem; font-family: 'JetBrains Mono'; }
+    .poem-body { color: var(--text-secondary); line-height: 1.8; font-style: italic; white-space: pre-line; }
+    .poem-date { color: var(--accent); font-size: 0.8rem; margin-top: 1rem; display: block; opacity: 0.5; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="index.html"><div class="nav-logo nav-glitch" data-text="> Daniel Han">&gt; Daniel Han</div></a>
+      <div class="nav-links">
+        <a href="index.html#about" class="hacker-text" data-value="About">About</a>
+        <a href="blog.html" class="hacker-text" data-value="Blog">Blog</a>
+        <a href="misc.html" class="hacker-text active" data-value="Misc">Misc</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="poetry-container">
+    <h2 class="section-title hacker-text" data-value="> poetry_logs">&gt; poetry_logs</h2>
+
+    <div class="poem-entry">
+        <h3 class="poem-title">xxx</h3>
+        <p class="poem-body">
+            xxx
+        </p>
+        <span class="poem-date">// LOG_DATE: 2026.04.09</span>
+    </div>
+
+    </div>
+  <script src="script.js"></script>
+</body>
+</html>

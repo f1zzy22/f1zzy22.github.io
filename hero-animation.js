@@ -3,7 +3,6 @@ window.startHeroAnimation = () => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // --- NEW: PREVENT DUPLICATE ANIMATIONS ON RESET ---
     if (window.heroAnimationFrame) {
         cancelAnimationFrame(window.heroAnimationFrame);
     }
@@ -14,17 +13,19 @@ window.startHeroAnimation = () => {
     let exploded = false;
     let particles = [];
     let splatters = []; 
-    let animationFrame;
 
     let timeSinceStop = 0;
     let isCrawling = false;
     let crawlStartTime = 0; 
     let isWaving = false;
     
-    // --- NEW STATES FOR THE BUTTON TRIGGER ---
+    // --- OPTIMIZATION 1: DELTA TIME TRACKING ---
+    let lastFrameTime = Date.now();
+    
     window.isCountingDown = false; 
     window.triggerDetonation = () => {
         window.isCountingDown = true;
+        lastFrameTime = Date.now(); // Reset clock right when clicked
     };
 
     let glitchState = 0; 
@@ -73,6 +74,7 @@ window.startHeroAnimation = () => {
 
         draw() {
             ctx.save();
+            ctx.shadowBlur = 0; // Prevent leak on particle draw
             ctx.globalAlpha = Math.max(0, this.alpha);
             ctx.fillStyle = this.color;
             
@@ -114,6 +116,7 @@ window.startHeroAnimation = () => {
             this.targetRot = 0;
             this.id = '';
             this.inPosition = false;
+            this.flashGreen = false; 
         }
 
         explode() {
@@ -142,7 +145,8 @@ window.startHeroAnimation = () => {
                 if (this.y < margin) { this.y = margin; this.vy *= -0.6; this.spin *= -0.5; } 
                 else if (this.y > canvas.height - margin) { this.y = canvas.height - margin; this.vy *= -0.6; this.spin *= -0.5; }
 
-                if (Math.random() > 0.4 && (Math.abs(this.vx) > 1 || Math.abs(this.vy) > 1)) {
+                // Lowered trailing probability to save frame rate
+                if (Math.random() > 0.7 && (Math.abs(this.vx) > 1 || Math.abs(this.vy) > 1)) {
                     splatters.push(new BloodSplatter(this.x, this.y, this.vx * 0.1, this.vy * 0.1, true));
                 }
 
@@ -168,7 +172,7 @@ window.startHeroAnimation = () => {
                     rotDiff = Math.atan2(Math.sin(rotDiff), Math.cos(rotDiff));
                     this.rotation = this.startRot + (rotDiff * progress);
 
-                    if (Math.random() > 0.6) splatters.push(new BloodSplatter(this.x, this.y, 0, 0, true));
+                    if (Math.random() > 0.8) splatters.push(new BloodSplatter(this.x, this.y, 0, 0, true));
                 }
             } else if (isWaving) {
                 
@@ -304,7 +308,11 @@ window.startHeroAnimation = () => {
             let renderY = this.y;
             let glowFlicker = 10;
 
-            if (isWaving) {
+            if (this.flashGreen) {
+                renderColor = "#00ff41"; 
+                renderShadow = "#00ff41";
+                glowFlicker = 15 + Math.random() * 10; 
+            } else if (isWaving) {
                 if (glitchState === 1) {
                     renderColor = "#ff003c"; 
                     renderShadow = bloodDark;
@@ -325,8 +333,15 @@ window.startHeroAnimation = () => {
             ctx.translate(renderX, renderY);
             ctx.rotate(this.rotation);
             ctx.fillStyle = renderColor;
-            ctx.shadowColor = renderShadow;
-            ctx.shadowBlur = glowFlicker; 
+            
+            // OPTIMIZATION 2: Only apply expensive shadowBlur if completely stopped or waving
+            if (this.stopped || isWaving) {
+                ctx.shadowColor = renderShadow;
+                ctx.shadowBlur = glowFlicker; 
+            } else {
+                ctx.shadowBlur = 0; 
+            }
+
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(this.char, 0, 0);
@@ -345,7 +360,7 @@ window.startHeroAnimation = () => {
         const startX = (canvas.width - totalWidth) / 2;
         const startY = canvas.height / 2;
 
-        for (let i = 0; i < 70; i++) {
+        for (let i = 0; i < 45; i++) {
             const angle = Math.random() * Math.PI * 2;
             const speed = Math.random() * 30 + 10;
             splatters.push(new BloodSplatter(canvas.width / 2, canvas.height / 2, Math.cos(angle) * speed, Math.sin(angle) * speed));
@@ -395,7 +410,6 @@ window.startHeroAnimation = () => {
         ctx.font = 'bold 80px "JetBrains Mono"';
         ctx.fillStyle = "#00ff41"; 
         ctx.shadowColor = "#00ff41";
-        // Very slow, calm breathing effect before the button is clicked
         ctx.shadowBlur = 10 + Math.sin(Date.now() / 400) * 5; 
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -411,6 +425,10 @@ window.startHeroAnimation = () => {
         const scale = 1 + Math.sin(Date.now() / 1000 * freq) * amp;
 
         ctx.save();
+        
+        // OPTIMIZATION 3: FORCE SHADOW BLUR OFF to prevent neon leaking
+        ctx.shadowBlur = 0; 
+        
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.scale(scale, scale);
         ctx.font = 'bold 80px "JetBrains Mono"';
@@ -429,16 +447,18 @@ window.startHeroAnimation = () => {
     }
 
     function animate() {
-        // --- MASTER TIMELINE UPDATED TO 17 SECONDS ---
+        
+        // CALCULATE DELTA TIME TO PREVENT SLOW MOTION
+        const now = Date.now();
+        const dt = (now - lastFrameTime) / 1000;
+        lastFrameTime = now;
+
         const cycleTime = Date.now() % 17000;
         let newPhase = 0;
         
-        // 1-SECOND GREEN PAUSE INSERTED IN THE MIDDLE OF THE SHAKE
-        if (cycleTime > 5000 && cycleTime < 5200) newPhase = 1;       // 1st half of violent red shake
-        else if (cycleTime >= 5200 && cycleTime < 5900) newPhase = 0; // 1-second calm green pause
-        else if (cycleTime >= 5900 && cycleTime < 6400) newPhase = 1; // 2nd half of violent red shake
-        
-        // The rest of the Frankenstein walk cycle (Shifted +1000ms)
+        if (cycleTime > 5000 && cycleTime < 5200) newPhase = 1;       
+        else if (cycleTime >= 5200 && cycleTime < 6200) newPhase = 0; 
+        else if (cycleTime >= 6200 && cycleTime < 6400) newPhase = 1; 
         else if (cycleTime >= 6400 && cycleTime < 7800) newPhase = 2; 
         else if (cycleTime >= 7800 && cycleTime < 11000) newPhase = 3; 
         else if (cycleTime >= 11000 && cycleTime < 12200) newPhase = 4; 
@@ -496,32 +516,23 @@ window.startHeroAnimation = () => {
 
         const allLettersStopped = exploded && particles.length > 0 && particles.every(p => p.stopped);
         
-        // --- TWITCHING HEAD WAKE-UP SEQUENCE ---
         if (allLettersStopped && !isCrawling && !isWaving) {
             if (timeSinceStop === 0) timeSinceStop = Date.now();
             
             let elapsedIdle = Date.now() - timeSinceStop;
             
-            // Between 1.5s and 1.7s, the "D" (head) violently twitches
             if (elapsedIdle > 1500 && elapsedIdle < 1700) {
-                
-                // INCREASED FREQUENCY: Now twitches on 90% of frames instead of 50%
                 if (Math.random() > 0.1) {
-                    // INCREASED MAGNITUDE: Jumps up to 14 pixels instead of 6
                     particles[0].x += (Math.random() - 0.5) * 14; 
                     particles[0].y += (Math.random() - 0.5) * 14; 
-                    
-                    // Thrashes its rotation twice as hard
                     particles[0].rotation += (Math.random() - 0.5) * 0.8; 
                     
-                    // Bleeds more often while thrashing
                     if (Math.random() > 0.6) { 
                         splatters.push(new BloodSplatter(particles[0].x, particles[0].y, (Math.random()-0.5)*6, (Math.random()-0.5)*6, true));
                     }
                 }
             }
 
-            // After 2.7 seconds, start crawling
             if (elapsedIdle > 2700) {
                 isCrawling = true;
                 crawlStartTime = Date.now(); 
@@ -536,23 +547,28 @@ window.startHeroAnimation = () => {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // --- NEW RENDER LOGIC FOR THE IDLE/COUNTDOWN STATE ---
         if (!isCountingDown) {
-            // STATE 1: Waiting for the user to click the button
             drawIdleName();
         } else if (!exploded) {
-            // STATE 2: Button clicked! Start the countdown
-            countdown = (parseFloat(countdown) - 0.016).toFixed(2);
+            
+            // SUBTRACT EXACT TIME PASSED INSTEAD OF FIXED FRAME COUNT
+            countdown = (parseFloat(countdown) - dt).toFixed(2);
+            
             if (countdown <= 0) {
                 countdown = 0;
                 exploded = true;
                 createShrapnel();
+                
+                // REVERTED GLITCH FIX: Shake body, not Canvas, to prevent layout thrashing lag
                 document.body.style.animation = "glitch 0.3s 2"; 
             }
             drawPulsingName();
         } else {
-            // STATE 3: Exploded, run the Frankenstein logic
+            
+            // OPTIMIZATION 4: Keep blood on the floor, but hard-cap the array to 200 items to prevent GPU memory leak
             splatters = splatters.filter(s => s.alpha > 0);
+            if (splatters.length > 200) splatters.splice(0, splatters.length - 200);
+
             splatters.forEach(s => {
                 s.update(allLettersStopped);
                 s.draw();
