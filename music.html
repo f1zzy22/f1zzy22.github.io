@@ -11,10 +11,7 @@
   
   <style>
     .music-container { max-width: 1500px; margin: 0 auto; width: 95%; padding-top: 120px; padding-bottom: 50px;}
-    
-    /* Layout: Sidebar (350px) | Main Feed (Flexible) */
     .music-grid { display: grid; grid-template-columns: 350px 1fr; gap: 2rem; margin-top: 2rem; align-items: start; }
-    
     .panel {
       background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(0, 255, 65, 0.2);
       padding: 1.5rem; border-radius: 8px; backdrop-filter: blur(10px);
@@ -22,35 +19,27 @@
       position: relative; margin-bottom: 1.5rem;
     }
     .panel-title { color: var(--accent); font-size: 1.0rem; border-bottom: 1px dashed rgba(0, 255, 65, 0.3); padding-bottom: 0.5rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
-
     .time-controls { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
     .time-btn, .sort-btn {
       background: transparent; color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.2);
       padding: 6px 12px; font-family: var(--font-mono); font-size: 0.8rem; cursor: pointer; border-radius: 4px; transition: 0.2s;
     }
     .time-btn.active, .time-btn:hover, .sort-btn.active, .sort-btn:hover { background: rgba(0, 255, 65, 0.1); color: var(--accent); border-color: var(--accent); }
-    
     .panel-sort-controls { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
     .sort-btn { padding: 2px 6px; font-size: 0.65rem; }
-
-    /* Total Stats */
     .total-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0.5rem; }
     .stat-box { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; }
     .stat-label { color: var(--text-secondary); font-size: 0.65rem; text-transform: uppercase; margin-bottom: 4px; }
     .stat-val { color: #fff; font-size: 1.2rem; font-weight: bold; font-family: var(--font-mono); }
-
-    /* Now Playing / Logs */
     .now-playing { display: flex; gap: 1rem; align-items: center; background: rgba(0, 255, 65, 0.05); padding: 1rem; border-radius: 6px; border: 1px solid rgba(0, 255, 65, 0.2); margin-bottom: 1rem; }
     .now-playing img { width: 50px; height: 50px; border-radius: 4px; object-fit: cover;}
     .np-info { display: flex; flex-direction: column; gap: 2px; width: 100%; overflow: hidden;}
     .np-status { color: var(--accent); font-size: 0.65rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
     .np-title { color: #fff; font-size: 0.85rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .np-artist { color: var(--text-secondary); font-size: 0.75rem; }
-    
     .eq { display: flex; gap: 2px; height: 8px; align-items: flex-end; }
     .eq-bar { width: 2px; background: var(--accent); animation: eq 0.6s infinite alternate; }
     @keyframes eq { 0% { height: 2px; } 100% { height: 8px; } }
-
     .history-log { background: #050505; border: 1px solid #222; padding: 1rem; border-radius: 6px; height: 250px; overflow-y: auto; font-size: 0.75rem; display: flex; flex-direction: column; gap: 8px; }
     .history-log::-webkit-scrollbar { width: 4px; }
     .history-log::-webkit-scrollbar-thumb { background: rgba(0,255,65,0.3); }
@@ -58,8 +47,6 @@
     .log-time { color: var(--accent-blue); flex-shrink: 0; font-size: 0.7rem; }
     .log-data { color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
     .log-data span { color: #fff; }
-
-    /* Top Feed Data */
     .data-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
     .track-list { display: flex; flex-direction: column; gap: 12px; }
     .top-track-item { display: flex; align-items: center; gap: 15px; }
@@ -70,8 +57,6 @@
     .track-name-row .t-plays { color: var(--text-secondary); }
     .play-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
     .play-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; }
-
-    /* Albums */
     .albums-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; }
     .album-card { position: relative; aspect-ratio: 1/1; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
     .album-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
@@ -80,9 +65,9 @@
     .album-card:hover .album-overlay { transform: translateY(0); }
     .a-name { color: #fff; font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .a-plays { color: var(--accent); font-size: 0.65rem; }
-
     .scraper-status { color: #ffbd2e; font-size: 0.85rem; text-align: center; margin-bottom: 1rem; animation: pulse 1.5s infinite; min-height: 20px; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .methodology-note { color: var(--text-secondary); font-size: 0.65rem; margin-top: 10px; font-family: var(--font-mono); text-align: right; }
 
     @media(max-width: 1100px) {
       .music-grid, .data-row { grid-template-columns: 1fr; }
@@ -149,8 +134,9 @@
 
         <div class="panel">
             <h3 class="panel-title">Listening Clock</h3>
-            <div style="height: 300px; width: 100%; display: flex; justify-content: center;">
+            <div style="height: 300px; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                 <canvas id="clockChart"></canvas>
+                <p class="methodology-note">*Note: This is a sample based on the most recent 2,000 tracks.</p>
             </div>
         </div>
       </div>
@@ -165,7 +151,7 @@
             </div>
             
             <div class="panel">
-                <h3 class="panel-title">Artist Radar</h3>
+                <h3 class="panel-title" id="artist-radar-title">Artist Radar (7 Days)</h3>
                 <div style="height: 300px; width: 100%; display: flex; justify-content: center;">
                     <canvas id="artistRadarChart"></canvas>
                 </div>
@@ -370,14 +356,26 @@
             data: { labels: labels, datasets: [{ data: hourlyCounts, backgroundColor: 'rgba(0, 212, 255, 0.5)', borderColor: 'rgba(20,20,20,1)', borderWidth: 1 }] },
             options: { 
                 responsive: true, maintainAspectRatio: false, 
-                plugins: { legend: { display: false } },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.raw} plays`;
+                            }
+                        }
+                    }
+                },
                 scales: { r: { ticks: {display: false}, grid: {color: 'rgba(255,255,255,0.05)'} } }
             }
         });
     }
 
     async function loadPeriodicData(period) {
-        document.getElementById('top-tracks-title').innerText = `Top Tracks (${period.toUpperCase()})`;
+        const periodLabel = period === '7day' ? '7 Days' : period === '1month' ? '1 Month' : period === '12month' ? '1 Year' : 'All Time';
+        document.getElementById('top-tracks-title').innerText = `Top Tracks (${periodLabel})`;
+        document.getElementById('artist-radar-title').innerText = `Artist Radar (${periodLabel})`;
+        
         const tracksData = await fetchAPI('user.gettoptracks', `&limit=6&period=${period}`);
         if(tracksData && tracksData.toptracks && tracksData.toptracks.track) {
             const tracks = Array.isArray(tracksData.toptracks.track) ? tracksData.toptracks.track : [tracksData.toptracks.track];
@@ -385,14 +383,16 @@
             document.getElementById('top-tracks').innerHTML = tracks.map((t, i) => {
                 const plays = parseInt(t.playcount || 0);
                 const pct = maxPlays > 0 ? (plays / maxPlays) * 100 : 0;
-                return `<div class="top-track-item"><div class="track-rank">0${i+1}</div><div class="track-core"><div class="track-name-row"><span class="t-name">${t.name}</span><span class="t-plays">${plays}</span></div><div class="play-bar-bg"><div class="play-bar-fill" style="width: ${pct}%"></div></div></div></div>`;
+                return `<div class="top-track-item"><div class="track-rank">0${i+1}</div><div class="track-core"><div class="track-name-row"><span class="t-name">${t.name}</span><span class="t-plays">${plays} plays</span></div><div class="play-bar-bg"><div class="play-bar-fill" style="width: ${pct}%"></div></div></div></div>`;
             }).join('');
         }
+        
         const albumsData = await fetchAPI('user.gettopalbums', `&limit=10&period=${period}`);
         if(albumsData && albumsData.topalbums && albumsData.topalbums.album) {
             const albums = Array.isArray(albumsData.topalbums.album) ? albumsData.topalbums.album : [albumsData.topalbums.album];
             document.getElementById('top-albums').innerHTML = albums.map(a => `<div class="album-card"><img src="${getSafeImage(a)}" alt="${a.name}"><div class="album-overlay"><span class="a-name">${a.name}</span><span class="a-plays">${a.playcount} plays</span></div></div>`).join('');
         }
+        
         const artistsData = await fetchAPI('user.gettopartists', `&limit=6&period=${period}`);
         if(artistsData && artistsData.topartists && artistsData.topartists.artist) {
             const artists = Array.isArray(artistsData.topartists.artist) ? artistsData.topartists.artist : [artistsData.topartists.artist];
@@ -400,7 +400,21 @@
             radarChartInstance = new Chart(document.getElementById('artistRadarChart').getContext('2d'), {
                 type: 'polarArea',
                 data: { labels: artists.map(a => a.name), datasets: [{ data: artists.map(a => parseInt(a.playcount)), backgroundColor: ['rgba(0, 255, 65, 0.6)', 'rgba(0, 212, 255, 0.6)', 'rgba(255, 0, 193, 0.6)', 'rgba(255, 215, 0, 0.6)', 'rgba(255, 77, 77, 0.6)', 'rgba(153, 51, 255, 0.6)'], borderColor: 'rgba(20,20,20,1)', borderWidth: 2 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#888', font: {family: 'JetBrains Mono', size: 10} } } }, scales: { r: { ticks: {display: false}, grid: {color: 'rgba(255,255,255,0.1)'} } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { position: 'right', labels: { color: '#888', font: {family: 'JetBrains Mono', size: 10} } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.raw} plays`;
+                                }
+                            }
+                        }
+                    }, 
+                    scales: { r: { ticks: {display: false}, grid: {color: 'rgba(255,255,255,0.1)'} } } 
+                }
             });
         }
     }
