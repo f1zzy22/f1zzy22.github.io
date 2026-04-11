@@ -3,23 +3,175 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Poetry | Daniel Han</title>
+  <title>Scrapbook Wall| Daniel Han</title>
   <link rel="icon" type="image/png" href="images/f1zzyicon.png">
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    .poetry-container { max-width: 800px; margin: 0 auto; width: 90%; padding-top: 150px; }
-    .poem-entry {
-        border-left: 2px solid var(--accent);
-        padding-left: 1.5rem;
-        margin-bottom: 4rem;
+    body { overflow: hidden; background: #0a0a0a; margin: 0; }
+
+    .section-title {
+        position: absolute;
+        top: 100px;
+        left: 5%;
+        opacity: 1;
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    .board {
+        position: relative;
+        width: 85vw;
+        height: 65vh;
+        margin: 220px auto 0; 
+        background-color: #bfa071; 
+        background-image: url('images/cork-texture.jpg'); 
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        border: 18px solid #6f4e37; 
+        border-image: linear-gradient(to bottom right, #8b5a2b, #6f4e37, #4e3621) 1; 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 100px rgba(0,0,0,0.3); 
+        border-radius: 4px;
+        overflow: hidden; 
+    }
+
+    .polaroid {
+        position: absolute;
+        background: #fdfdfd;
+        padding: 12px 12px 55px 12px; 
+        box-shadow: 2px 5px 15px rgba(0,0,0,0.4);
+        width: 200px;
+        cursor: grab;
+        user-select: none;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                    height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                    box-shadow 0.3s;
+        top: -500px; 
+    }
+
+    .polaroid:active { cursor: grabbing; box-shadow: 5px 10px 25px rgba(0,0,0,0.5); }
+
+    .polaroid-photo {
+        background: #fff; 
+        padding: 15px;
+        height: 180px; 
+        display: block; /* Changed from flex to block */
+        overflow: hidden; 
+        border: 1px solid #ddd;
+        position: relative;
+        transition: background 1.2s ease, border-color 1.2s ease, height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .develop-prompt {
+        font-family: 'Nanum Pen Script', cursive;
+        color: #bbb;
+        font-size: 1.4rem;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+        text-align: center;
+        line-height: 1.2;
+        /* Absolute centering so padding doesn't push it */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+    }
+    
+    .develop-prompt span { display: block; }
+
+    .polaroid.expanded .develop-prompt { display: none; }
+
+    .polaroid.expanded .polaroid-photo {
+        background: #111;
+        border-color: #222;
+        height: 400px;
+        overflow-y: auto; 
+    }
+
+    .poem-body { 
+        color: #fff; 
+        line-height: 1.7; 
+        font-size: 0.8rem;
+        font-family: 'Inter', sans-serif;
+        white-space: pre-line; 
+        margin: 0;
+        opacity: 0; 
+        filter: blur(5px);
+        transition: opacity 1.5s ease 0.3s, filter 1.5s ease 0.3s;
+    }
+
+    .polaroid.expanded .poem-body {
+        opacity: 1;
+        filter: blur(0);
+        font-size: 1rem;
+    }
+
+    .polaroid.closing .poem-body {
+        transition: none !important;
+        opacity: 0 !important;
+    }
+
+    .polaroid-caption { 
+        position: absolute;
+        bottom: 8px; 
+        left: 0;
+        width: 100%;
+        padding: 0 10px; 
+        box-sizing: border-box; 
+        color: #333; 
+        font-size: 1.2rem; 
+        line-height: 1.1; 
+        font-family: 'Nanum Pen Script', cursive;
+        text-align: center;
         opacity: 0.8;
+    }
+
+    .polaroid.expanded {
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) rotate(0deg) !important;
+        width: 450px;
+        z-index: 10000 !important; 
+        cursor: default;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+    }
+
+    .close-btn {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: #222;
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        opacity: 0;
+        z-index: 1001;
         transition: opacity 0.3s;
     }
-    .poem-entry:hover { opacity: 1; }
-    .poem-title { color: #fff; font-size: 1.4rem; margin-bottom: 1rem; font-family: 'JetBrains Mono'; }
-    .poem-body { color: var(--text-secondary); line-height: 1.8; font-style: italic; white-space: pre-line; }
-    .poem-date { color: var(--accent); font-size: 0.8rem; margin-top: 1rem; display: block; opacity: 0.5; }
+    .polaroid.expanded .close-btn { opacity: 1; }
+
+    .tape {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 20px;
+        background: rgba(200, 200, 200, 0.3);
+        backdrop-filter: blur(1px);
+        z-index: 5;
+    }
   </style>
 </head>
 <body>
@@ -35,18 +187,259 @@
     </div>
   </nav>
 
-  <div class="poetry-container">
-    <h2 class="section-title hacker-text" data-value="> poetry_logs">&gt; poetry_logs</h2>
+  <h2 class="section-title hacker-text" data-value="> Unfiltered Thoughts">&gt; Unfiltered Thoughts</h2>
 
-    <div class="poem-entry">
-        <h3 class="poem-title">xxx</h3>
-        <p class="poem-body">
-            xxx
-        </p>
-        <span class="poem-date">// LOG_DATE: 2026.04.09</span>
+  <div class="board" id="board">
+    
+    <div class="polaroid">
+        <div class="tape"></div>
+        <div class="close-btn">×</div>
+        <div class="polaroid-photo">
+            <span class="develop-prompt"><span>click to</span><span>develop</span></span>
+            <p class="poem-body">Dormant,
+              but alert for
+              a rude awakening:
+              to either save
+              lives in danger
+              or save those at risk
+              of failing an exam.
+              </p>
+        </div>
+        <div class="polaroid-caption">PULL IN CASE OF Exam</div>
     </div>
 
+    <div class="polaroid">
+        <div class="tape"></div>
+        <div class="close-btn">×</div>
+        <div class="polaroid-photo">
+            <span class="develop-prompt"><span>click to</span><span>develop</span></span>
+            <p class="poem-body">Laptop out and about,
+              productivity is just out of
+              reach for the Dulce Blueberry Matcha
+              and sip the carefully crafted
+              flavors, curated first for the gaze--
+              taste a mere after-thought.
+              </p>
+        </div>
+        <div class="polaroid-caption">Matcha Over Matter</div>
     </div>
-  <script src="script.js"></script>
+
+    <div class="polaroid">
+      <div class="tape"></div>
+      <div class="close-btn">×</div>
+      <div class="polaroid-photo">
+          <span class="develop-prompt"><span>click to</span><span>develop</span></span>
+          <p class="poem-body">Gripping the wheel
+            with my left hand, speeding
+            over a pothole on the I-5
+            with my brain scrambling for
+            the car keys in the ignition, clashing loudly
+            against my Joshua Tree keychain and
+            “Close to You” blaring on the AUX.
+            
+            LA drives me to the edge
+            of sanity
+            with all the noise.
+            
+            Maybe it’s time for another road trip
+            to Joshua Tree -- alone this time,
+            sunroof and mouth wide open
+            in awe of the silent stars above. 
+            
+            </p>
+      </div>
+      <div class="polaroid-caption">Stargazing In Silence</div>
+    </div>
+
+    <div class="polaroid">
+      <div class="tape"></div>
+      <div class="close-btn">×</div>
+      <div class="polaroid-photo">
+          <span class="develop-prompt"><span>click to</span><span>develop</span></span>
+          <p class="poem-body">Our time may seem like a catastrophe;
+            Nevertheless, thou shalt maintain thy calm
+            For the best choice is e’er tranquility.
+            
+            Rolling ashore, fell prophets from the sea,
+            The waves chant all night long a wicked psalm
+            (When time may seem like a catastrophe).
+            
+            Let’s put our best foot forward and be free,
+            Share what we have (rich giving paupers alm),
+            Hope the best choice be e’er tranquility.
+            
+            Can devilish obliteration be
+            Transformed into creating, earthly malm,
+            Though time may seem like a catastrophe?
+            
+            Perhaps the bitter cold may weaken me--
+            But cracked hands soften with the use of balm,
+            So the best choice is e’er tranquility.
+            
+            Our rhetoric’s become incendiary,
+            Exploding anger and blood -- verbal napalm;
+            Our time may seem like a catastrophe,
+            But the best choice is e’er tranquility.
+            </p>
+      </div>
+      <div class="polaroid-caption">Construction From Destruction</div>
+    </div>
+
+    <div class="polaroid">
+        <div class="tape"></div>
+        <div class="close-btn">×</div>
+        <div class="polaroid-photo">
+            <span class="develop-prompt"><span>click to</span><span>develop</span></span>
+            <p class="poem-body">Eyes lock,
+              I love
+              the bottomless ethereal
+              seas of your Iris,
+              Jess, Sophia? -- You seem like a
+              Joy to be with and look at
+              how delusional I am, to be
+              envisioning a glimpse of what
+              we could be and see
+              together.
+              
+              Drifting off and losing spark,
+              our eyes mutually agree
+              with an abrupt but definitive break.
+              </p>
+        </div>
+        <div class="polaroid-caption">Eye Love</div>
+    </div>
+
+    <div class="polaroid">
+      <div class="tape"></div>
+      <div class="close-btn">×</div>
+      <div class="polaroid-photo">
+          <span class="develop-prompt"><span>click to</span><span>develop</span></span>
+          <p class="poem-body">Frail fingers, frozen,
+            wet, and betrayed
+            by the Weather App
+            that I so meticulously checked
+            before stepping out
+            which solemnly promised me otherwise.                  
+            </p>
+      </div>
+      <div class="polaroid-caption">Faulty Forecast</div>
+    </div>
+
+    <div class="polaroid">
+      <div class="tape"></div>
+      <div class="close-btn">×</div>
+      <div class="polaroid-photo">
+          <span class="develop-prompt"><span>click to</span><span>develop</span></span>
+          <p class="poem-body">Is it wrong of me to assume that
+            you’re a true believer
+            in retail therapy,
+            with Sephora, Zara, and fashion companies
+            I would have to Google,
+            brands probably well beyond my tax bracket,
+            and echoed by the ever-growing numbers
+            in your shopping carts,
+            items destined to be worn once or twice
+            before being banished
+            to the neglected back
+            of your already overfilled closet,
+            and the way you scroll--
+            so casual, so mindless?
+            
+            This is not your first endeavor
+            and most definitely won’t be your last.
+            It’s been 46 minutes and 23 seconds,
+            but 0 items have been purchased, yet.
+            
+            I don’t buy it.
+            I guess you don’t, either.
+            </p>
+      </div>
+      <div class="polaroid-caption">The Voyeur</div>
+    </div>
+  </div> 
+
+  <script>
+    let highestZ = 10;
+    let isAnyExpanded = false;
+    const board = document.getElementById('board');
+
+    document.querySelectorAll('.polaroid').forEach((el) => {
+        const boardWidth = board.offsetWidth;
+        const boardHeight = board.offsetHeight;
+
+        const maxSpawnX = Math.max(0, boardWidth - 240);
+        const maxSpawnY = Math.max(0, boardHeight - 280);
+
+        const x = Math.max(10, Math.random() * maxSpawnX); 
+        const y = Math.max(10, Math.random() * maxSpawnY); 
+        const r = (Math.random() * 20) - 10;
+        
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+        el.style.transform = `rotate(${r}deg)`;
+        el.dataset.rot = r;
+
+        let isDragging = false;
+        let startX, startY, initX, initY;
+        let moveDist = 0;
+
+        el.addEventListener('mousedown', (e) => {
+            if(el.classList.contains('expanded')) return;
+            isDragging = true;
+            moveDist = 0;
+            el.style.zIndex = ++highestZ;
+            startX = e.clientX;
+            startY = e.clientY;
+            initX = el.offsetLeft;
+            initY = el.offsetTop;
+            el.style.transition = "none"; 
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if(!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            moveDist = Math.sqrt(dx*dx + dy*dy);
+            
+            let newX = initX + dx;
+            let newY = initY + dy;
+
+            const currentBoardWidth = board.offsetWidth;
+            const currentBoardHeight = board.offsetHeight;
+            const maxDragX = currentBoardWidth - el.offsetWidth;
+            const maxDragY = currentBoardHeight - el.offsetHeight;
+
+            newX = Math.max(0, Math.min(newX, maxDragX));
+            newY = Math.max(0, Math.min(newY, maxDragY));
+
+            el.style.left = `${newX}px`;
+            el.style.top = `${newY}px`;
+        });
+
+        document.addEventListener('mouseup', () => {
+            if(!isDragging) return;
+            isDragging = false;
+            el.style.transition = "width 0.6s cubic-bezier(0.4, 0, 0.2, 1), height 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s";
+
+            if(moveDist < 5 && !isAnyExpanded) {
+                el.classList.add('expanded');
+                isAnyExpanded = true;
+            }
+        });
+
+        el.querySelector('.close-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            el.classList.add('closing');
+            el.classList.remove('expanded');
+            el.style.transform = `rotate(${el.dataset.rot}deg)`;
+            
+            setTimeout(() => {
+                el.classList.remove('closing');
+                isAnyExpanded = false;
+            }, 600); 
+        });
+    });
+  </script>
 </body>
 </html>
