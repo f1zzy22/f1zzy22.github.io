@@ -23,6 +23,9 @@
       flex-direction: column;
       justify-content: space-between;
       min-height: 380px;
+      position: relative;
+      /* CRITICAL: Hides the sharp edges of the diagonal banner */
+      overflow: hidden; 
     }
 
     .blog-card:hover .blog-desc {
@@ -86,6 +89,41 @@
     @keyframes wave-bounce {
       from { height: 8px; opacity: 0.4; }
       to { height: 40px; opacity: 1; }
+    }
+
+    /* DIAGONAL CORNER RIBBON STYLES */
+    .live-ribbon {
+      position: absolute;
+      top: 25px;
+      right: -35px;
+      background: var(--accent);
+      color: #000;
+      padding: 6px 40px;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      transform: rotate(45deg);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(0, 255, 65, 0.4);
+      pointer-events: none; /* Prevents ribbon from interfering with hover states */
+    }
+    
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      background: #000; /* Dark dot for contrast against green ribbon */
+      border-radius: 50%;
+      animation: pulse-dot-dark 1.5s infinite;
+    }
+
+    @keyframes pulse-dot-dark {
+      0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(0, 0, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
     }
 
     /* 3. Poetry: HUMAN SEQUENTIAL WRITER */
@@ -181,12 +219,17 @@
             </div>
           </div>
           <h3 class="blog-title">Fast Fingered?</h3>
-          <p class="blog-desc">A quick typing challenge. Everyone gets on the leaderboard. Only a select few make the Hall of Fame.</p>
+          <p class="blog-desc">A quick typing challenge. Everyone can make the leaderboard, but only a select few earn a spot on the Hall of Fame.</p>
         </div>
         <div class="read-more">Play Game &gt;</div>
       </a>
 
-      <a href="music.html" class="blog-card">
+      <a href="music.html" class="blog-card" id="music-card-container">
+        <div class="live-ribbon" id="live-music-badge" style="display: none;">
+            <div class="live-dot"></div>
+            LIVE NOW
+        </div>
+        
         <div>
           <div class="icon-container">
             <div class="wave-container">
@@ -229,5 +272,48 @@
   </div>
 
   <script src="script.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const API_KEY = '6428cc31e6ba1fb7fa52fc69ff008d05';
+        const USERNAME = 'f1zzy22222';
+        const BASE_URL = `https://ws.audioscrobbler.com/2.0/?user=${USERNAME}&api_key=${API_KEY}&format=json`;
+
+        async function checkLiveMusic() {
+            try {
+                const res = await fetch(`${BASE_URL}&method=user.getrecenttracks&limit=1`);
+                if (!res.ok) return;
+                
+                const data = await res.json();
+                
+                if (data && data.recenttracks && data.recenttracks.track) {
+                    let tracks = data.recenttracks.track;
+                    if (!Array.isArray(tracks)) tracks = [tracks]; 
+                    
+                    const np = tracks[0];
+                    const isPlaying = np['@attr'] && np['@attr'].nowplaying === 'true';
+                    
+                    const badge = document.getElementById('live-music-badge');
+                    const card = document.getElementById('music-card-container');
+                    
+                    if (isPlaying) {
+                        badge.style.display = 'flex';
+                        const trackName = np.name || 'Unknown Track';
+                        const artistName = (np.artist && np.artist['#text']) ? np.artist['#text'] : 'Unknown Artist';
+                        card.setAttribute('title', `Currently Listening to: ${trackName} by ${artistName}`);
+                    } else {
+                        badge.style.display = 'none';
+                        card.removeAttribute('title');
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to fetch live music status:", e);
+            }
+        }
+
+        checkLiveMusic();
+        setInterval(checkLiveMusic, 30000); 
+    });
+  </script>
 </body>
 </html>
