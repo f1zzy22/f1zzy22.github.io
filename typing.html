@@ -19,8 +19,7 @@
   img-src 'self' data:;
 ">
   <style>
-
-.header-cursor {
+    .header-cursor {
       color: var(--accent);
       margin-left: 4px;
       animation: opacityBlink 1s step-end infinite;
@@ -229,12 +228,8 @@
       <h2 class="section-title hacker-text" data-value="> Fast Fingered?">&gt; Fast Fingered?</h2>
       
       <div style="margin-bottom: 3rem;">
-        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.8rem; display: flex; align-items: center;">
-            <span id="animated-header-text"></span><span class="header-cursor">_</span>
-        </h3>
-        <p style="color: var(--text-secondary); line-height: 1.6;">
-            My best recorded pace so far is <strong id="daniel-score-text" style="color: #ffd700;">... WPM</strong><span id="daniel-date-text" style="opacity: 0.7; font-size: 0.9em;"></span>. 
-            Beat my score to forever earn a spot on my digital Hall of Fame. <br><br>Note: High scores are published to the performance graph below.
+        <p style="color: var(--text-secondary); line-height: 1.6; font-size: 1.05rem; min-height: 80px;">
+            <span id="animated-desc-container"></span><span class="header-cursor">_</span>
         </p>
       </div>
 
@@ -246,10 +241,10 @@
           </div>
           
           <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-            <span id="race-hint-text" style="font-size: 0.75rem; color: var(--text-secondary); font-style: italic; opacity: 0.8;">Turn this off if distracting</span>
+            <span id="race-hint-text" style="font-size: 0.75rem; color: var(--text-secondary); font-style: italic; opacity: 0.8;">Turn this on if competitive</span>
             <div class="toggle-container" style="margin-top: 0;">
                 <span class="toggle-label" id="daniel-toggle-text">Race Me (... WPM)</span>
-                <label class="switch"><input type="checkbox" id="race-switch" checked><span class="slider"></span></label>
+                <label class="switch"><input type="checkbox" id="race-switch"><span class="slider"></span></label>
             </div>
           </div>
         </div>
@@ -291,13 +286,11 @@
   </section>
 
   <div id="terminal-overlay" class="terminal-overlay" style="display: none; background: transparent; z-index: 9998; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; align-items: center; justify-content: center;">
-    
     <div class="terminal-window" style="transform: scale(1); opacity: 1;">
       <div class="terminal-header">
       </div>
       <div class="terminal-body" id="terminal-content"></div>
     </div>
-    
   </div>
 
   <div id="malware-overlay" class="malware-overlay">
@@ -313,7 +306,6 @@
     </div>
   </div>
 
-
   <script>
     // --- TYPING TEST SUPABASE & CHART LOGIC ---
     const _supabaseUrl = 'https://vefnwnxghpcgajiurufx.supabase.co';
@@ -321,6 +313,11 @@
     const _db = supabase.createClient(_supabaseUrl, _supabaseKey);
     const promptText = "Stumble. Because you will fall. You will faceplant in front of random people and even those you are trying so hard to impress. You turn into a hot honey chicken tender, burning with shameful, red, and oily tears. It burns. But learn how to sit in that fire. Laugh because you fell. Laugh until it almost feels masochistic. There is simply no time to overthink the pain.";
     
+    // Globals for Text Animation Injection
+    let myWPM = 100;
+    let myDateString = "";
+    let baseRaceSpeedMs = 60000 / (myWPM * 5); 
+
     const starCanvas = document.createElement('canvas');
     starCanvas.width = 40;
     starCanvas.height = 40;
@@ -376,8 +373,6 @@
     
     let characters = [], charIndex = 0, mistakes = 0, timerInterval = null, startTime = null, isTyping = false;
     let raceIndex = 0, raceTimeout = null, ghostDelays = [], performanceChart = null;
-    let myWPM = 100;
-    let baseRaceSpeedMs = 60000 / (myWPM * 5); 
 
     usernameInput.addEventListener('input', (e) => {
         if (e.target.value.trim().length > 0) {
@@ -410,12 +405,10 @@
         
         const d = new Date(data[0].created_at);
         if (!isNaN(d.getTime())) {
-            const dateString = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-            document.getElementById('daniel-date-text').innerText = ` (as of ${dateString})`;
+            myDateString = ` (as of ${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })})`;
         }
       }
       
-      document.getElementById('daniel-score-text').innerText = `${myWPM} WPM`;
       document.getElementById('daniel-toggle-text').innerText = `Race Me (${myWPM} WPM)`;
     }
 
@@ -513,14 +506,6 @@
         let percentile = total > 1 ? (index / (total - 1)) * 100 : 100;
         return { x: percentile, y: d.wpm, user: d.username };
       });
-    }
-
-    function getOrdinalSuffix(i) {
-        let j = i % 10, k = i % 100;
-        if (j == 1 && k != 11) return i + "st";
-        if (j == 2 && k != 12) return i + "nd";
-        if (j == 3 && k != 13) return i + "rd";
-        return i + "th";
     }
 
     function renderHallOfFame(data) {
@@ -687,47 +672,34 @@
           plugins: { 
             legend: { display: false },
             tooltip: {
-  enabled: true,
-  position: 'nearest',
-  backgroundColor: 'rgba(20, 20, 20, 0.95)',
-  borderColor: 'rgba(255, 255, 255, 0.1)',
-  borderWidth: 1,
-  padding: 12,
-  displayColors: false,
-  yAlign: 'bottom', 
-  caretPadding: 15,
-  
-  // Style the Username (Title)
-  titleFont: { family: 'JetBrains Mono', size: 14, weight: 'bold' },
-  titleColor: (context) => {
-    // Dynamically color the title based on the user
-    const user = context.tooltip.dataPoints?.[0]?.raw?.user;
-    return user === 'f1zzy22' ? '#ffd700' : '#00ff41'; 
-  },
-  
-  // Style the Stats (Body)
-  bodyFont: { family: 'JetBrains Mono', size: 13 },
-  bodyColor: '#e0e0e0', // Slightly dimmed white for hierarchy
-  
-  callbacks: { 
-  // Keep the username as the title
-  title: (c) => c[0].raw.user, 
-  
-  // Convert percentile to "Top X%"
-  label: (c) => {
-    const percentile = c.raw.x; // Assuming x is the raw percentile (0-100)
-    let topPct = 100 - percentile;
-
-    if (topPct <= 0.01) topPct = 0.01;
-    if (topPct >= 99.99) topPct = 99.99;
-
-    // toFixed(2) keeps the precision for 0.01, and parseFloat strips trailing zeros for whole numbers (e.g., 5.00 becomes 5)
-    const displayPct = parseFloat(topPct.toFixed(2));
-
-    return `${c.raw.y} WPM (top ${displayPct}%)`;
-  }
-}
-},
+                enabled: true,
+                position: 'nearest',
+                backgroundColor: 'rgba(20, 20, 20, 0.95)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                displayColors: false,
+                yAlign: 'bottom', 
+                caretPadding: 15,
+                titleFont: { family: 'JetBrains Mono', size: 14, weight: 'bold' },
+                titleColor: (context) => {
+                    const user = context.tooltip.dataPoints?.[0]?.raw?.user;
+                    return user === 'f1zzy22' ? '#ffd700' : '#00ff41'; 
+                },
+                bodyFont: { family: 'JetBrains Mono', size: 13 },
+                bodyColor: '#e0e0e0',
+                callbacks: { 
+                title: (c) => c[0].raw.user, 
+                label: (c) => {
+                    const percentile = c.raw.x;
+                    let topPct = 100 - percentile;
+                    if (topPct <= 0.01) topPct = 0.01;
+                    if (topPct >= 99.99) topPct = 99.99;
+                    const displayPct = parseFloat(topPct.toFixed(2));
+                    return `${c.raw.y} WPM (top ${displayPct}%)`;
+                }
+              }
+            },
             annotation: {
               annotations: {
                 danielLine: {
@@ -793,14 +765,11 @@
             userLine.display = true;
             userLine.yMin = userPoint.y;
             userLine.yMax = userPoint.y;
-            
-            // --- UPDATED COLORS TO WHITE ---
             userLine.borderColor = '#ffffff'; 
             userLine.label.display = true;
             userLine.label.color = '#ffffff'; 
             userLine.label.content = `You [${newUsername}]: ${userPoint.y} WPM`;
 
-            // Collision logic for labels
             if (Math.abs(userPoint.y - myWPM) <= 15) {
                 if (userPoint.y >= myWPM) {
                     userLine.label.yAdjust = -12;
@@ -822,58 +791,94 @@
       performanceChart.update();
     }
 
-    async function typeHeaderTypoEffect() {
-        const textSpan = document.getElementById('animated-header-text');
-        if (!textSpan) return;
+    // --- NEW DESCRIPTION TYPO EFFECT ---
+    async function typeDescriptionTypoEffect() {
+        const container = document.getElementById('animated-desc-container');
+        if (!container) return;
 
-        const part1 = "Can Yo Type Fster THan";
-        const deletes = 16; // Deletes "ster THan"
-        const part2 = "u Type Faster Than Me?";
+        container.innerHTML = ""; // Clear existing
 
-        // 1. Type the mistake out normally
-        for (let i = 0; i < part1.length; i++) {
-            textSpan.textContent += part1[i];
-            // Random delay between 40ms and 90ms for realistic human pacing
-            await new Promise(r => setTimeout(r, Math.random() * 50 + 40));
+        const speed = () => new Promise(r => setTimeout(r, Math.random() * 30 + 15));
+        const fastSpeed = () => new Promise(r => setTimeout(r, 20));
+
+        // Create spans for styling
+        const span1 = document.createElement('span');
+        
+        const wpmSpan = document.createElement('strong');
+        wpmSpan.style.color = '#ffd700';
+        
+        const dateSpan = document.createElement('span');
+        dateSpan.style.opacity = '0.7';
+        dateSpan.style.fontSize = '0.9em';
+        
+        const span2 = document.createElement('span');
+        const span3 = document.createElement('span');
+
+        container.appendChild(span1);
+        container.appendChild(wpmSpan);
+        container.appendChild(dateSpan);
+        container.appendChild(span2);
+
+        // 1. Type First Part
+        const str1 = "My best recorded pace so far is ";
+        for(let char of str1) { span1.textContent += char; await speed(); }
+
+        // 2. Type WPM Data
+        const strWpm = `${myWPM} WPM`;
+        for(let char of strWpm) { wpmSpan.textContent += char; await speed(); }
+
+        // 3. Type Date Data
+        if (myDateString) {
+            for(let char of myDateString) { dateSpan.textContent += char; await speed(); }
         }
 
-        // 2. Pause (The "Wait, I messed up" realization)
-        await new Promise(r => setTimeout(r, 600));
+        // 4. Type the Mistake
+        const str2_typo = ". Bet my scjore to froever earn";
+        for(let char of str2_typo) { span2.textContent += char; await speed(); }
 
-        // 3. Mash the backspace key
-        for (let i = 0; i < deletes; i++) {
-            textSpan.textContent = textSpan.textContent.slice(0, -1);
-            // Fast backspace speed
-            await new Promise(r => setTimeout(r, 30)); 
+        // Pause to "realize" mistake
+        await new Promise(r => setTimeout(r, 400)); 
+
+        // 5. Backspace the Mistake
+        for(let i=0; i<29; i++) { // Deletes "froever e"
+            span2.textContent = span2.textContent.slice(0, -1);
+            await fastSpeed();
         }
 
-        // 4. Slight pause before correcting
-        await new Promise(r => setTimeout(r, 300));
+        await new Promise(r => setTimeout(r, 200));
 
-        // 5. Type the correct ending
-        for (let i = 0; i < part2.length; i++) {
-            textSpan.textContent += part2[i];
-            await new Promise(r => setTimeout(r, Math.random() * 50 + 40));
-        }
+        // 6. Finish Correctly
+        const str2_correct = "Beat my score to forever earn a spot on my digital Hall of Fame.";
+        for(let char of str2_correct) { span2.textContent += char; await speed(); }
+
+        // Add line breaks and final sentence
+        container.appendChild(document.createElement('br'));
+        container.appendChild(document.createElement('br'));
+        container.appendChild(span3);
+
+        const str3 = "Note: High scores are published to the performance graph below.";
+        for(let char of str3) { span3.textContent += char; await speed(); }
     }
 
     restartBtn.addEventListener('click', initTest);
+    
+    // Updated window.onload to trigger the new description typing function
     window.onload = async () => { 
       await fetchDanielScore();
       initTest(); 
       initChart(); 
-      typeHeaderTypoEffect();
+      typeDescriptionTypoEffect();
     };
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script>
-    // --- EXACT ORIGINAL MATRIX RAIN FUNCTION ---
+    // --- MATRIX RAIN & MALWARE FUNCTIONS ---
     const overlay = document.getElementById('terminal-overlay');
     let matrixInterval;
 
     function startMatrixRain() {
         if (!overlay) return;
-        if (matrixInterval) clearInterval(matrixInterval); // Prevent doubles
+        if (matrixInterval) clearInterval(matrixInterval);
 
         let matrixCanvas = document.getElementById('matrix-canvas');
         if (!matrixCanvas) {
@@ -906,13 +911,13 @@
                 const colorChance = Math.random();
                 
                 if (colorChance > 0.98) {
-                    ctx.fillStyle = 'rgba(255, 0, 193, 0.6)';  // Hot Pink
+                    ctx.fillStyle = 'rgba(255, 0, 193, 0.6)';
                 } else if (colorChance > 0.93) {
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // White
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                 } else if (colorChance > 0.78) {
-                    ctx.fillStyle = 'rgba(0, 212, 255, 0.3)';   // Blue
+                    ctx.fillStyle = 'rgba(0, 212, 255, 0.3)';
                 } else {
-                    ctx.fillStyle = 'rgba(0, 255, 65, 0.3)';    // Hacker Green
+                    ctx.fillStyle = 'rgba(0, 255, 65, 0.3)';
                 }
                 
                 const x = ind * 20;
@@ -925,8 +930,7 @@
         matrixInterval = setInterval(drawMatrix, 50); 
     }
 
-    // --- YOUR EXACT INACTIVITY MALWARE TIMEOUT ---
-    const inactivityLimit = 60 * 1000; // 60 seconds
+    const inactivityLimit = 60 * 1000;
     let inactivityTimer;
     let countdownInterval;
     let isMalwareActive = false;
@@ -1025,7 +1029,6 @@
             }, 30);
         };
     });
-
   </script>
 </body>
 </html>
