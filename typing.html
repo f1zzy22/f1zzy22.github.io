@@ -566,7 +566,7 @@
       let rawUsername = usernameInput.value.trim();
       const username = rawUsername.replace(/[<>]/g, "").substring(0, 15);
       
-      if (!username || wpm > 250 || acc < 30) { 
+      if (!username || wpm > 350 || acc < 30) { 
           syncStatus.innerText = "Integrity check failed."; 
           syncStatus.style.color = "#ff003c";
           return; 
