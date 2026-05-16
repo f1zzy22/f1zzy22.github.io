@@ -341,4 +341,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetInactivityTimer();
 
+    // --- 8. MOUSE TRAIL LOGIC ---
+    let lastStarTime = 0;
+    window.addEventListener("mousemove", function(e) {
+        const now = Date.now();
+        if (now - lastStarTime < 40) return; // create a star every 40ms
+        lastStarTime = now;
+
+        const star = document.createElement("div");
+        star.innerHTML = "★";
+        star.style.position = "fixed";
+        star.style.left = (e.clientX - 10) + "px";
+        star.style.top = (e.clientY - 10) + "px";
+        star.style.color = "#ff00c1";
+        star.style.fontSize = (Math.random() * 10 + 15) + "px";
+        star.style.pointerEvents = "none";
+        star.style.zIndex = "999999";
+        star.style.textShadow = "0 0 5px rgba(255, 0, 193, 0.8)";
+        star.style.transition = "transform 0.8s ease-out, opacity 0.8s ease-out";
+        document.body.appendChild(star);
+
+        // Force reflow
+        star.getBoundingClientRect();
+
+        star.style.transform = `translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 + 20}px) scale(0) rotate(${Math.random() * 180 - 90}deg)`;
+        star.style.opacity = "0";
+
+        setTimeout(() => {
+            star.remove();
+        }, 800);
+    });
+
 });

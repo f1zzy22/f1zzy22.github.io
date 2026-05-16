@@ -17,11 +17,11 @@
 }
 
 body, html {
-  cursor: alias;
+  cursor: auto;
 }
 
 a, button, .nav-logo, .hacker-text {
-  cursor: alias !important; 
+  cursor: pointer !important; 
 }
 
 body {
