@@ -283,7 +283,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let isMalwareActive = false;
     let timeLeft = 60;
 
-    const malwareOverlay = document.getElementById('malware-overlay');
+    let malwareOverlay = document.getElementById('malware-overlay');
+    
+    // Automatically inject the malware overlay if it doesn't exist on the page
+    if (!malwareOverlay) {
+        malwareOverlay = document.createElement('div');
+        malwareOverlay.id = 'malware-overlay';
+        malwareOverlay.className = 'malware-overlay';
+        malwareOverlay.innerHTML = `
+            <div class="malware-corruption"></div>
+            <div class="malware-modal">
+              <h2 class="malware-title">Are You Still Browsing?</h2>
+              <p>You have been inactive for some time.</p>
+              <p>You will be signed out soon to keep the connection safe.</p>
+              <div class="countdown-container">
+                <span id="malware-countdown">60</span><span>s until connection drop...</span>
+              </div>
+              <button id="malware-yes-btn" class="malware-btn">[CONTINUE]</button>
+            </div>
+        `;
+        document.body.appendChild(malwareOverlay);
+    }
+
     const countdownDisplay = document.getElementById('malware-countdown');
     const yesBtn = document.getElementById('malware-yes-btn');
 
