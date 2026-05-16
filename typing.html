@@ -169,6 +169,8 @@
       max-height: 400px;
       overflow-y: auto;
       padding-right: 0.5rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
     }
     .hof-grid::-webkit-scrollbar { width: 6px; }
     .hof-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
@@ -205,6 +207,25 @@
 
     @keyframes borderBlink { 0%, 100% { border-color: var(--accent); } 50% { border-color: transparent; } }
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+    @keyframes smoothRainbow {
+      0% { border-color: hsl(0, 60%, 75%); box-shadow: 0 0 15px rgba(255,255,255,0.4); }
+      20% { border-color: hsl(72, 60%, 75%); box-shadow: 0 0 15px rgba(255,255,255,0.4); }
+      40% { border-color: hsl(144, 60%, 75%); box-shadow: 0 0 15px rgba(255,255,255,0.4); }
+      60% { border-color: hsl(216, 60%, 75%); box-shadow: 0 0 15px rgba(255,255,255,0.4); }
+      80% { border-color: hsl(288, 60%, 75%); box-shadow: 0 0 15px rgba(255,255,255,0.4); }
+      100% { border-color: hsl(360, 60%, 75%); box-shadow: 0 0 15px rgba(255,255,255,0.4); }
+    }
+    @keyframes smoothText {
+      0% { color: hsl(0, 60%, 75%); text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+      20% { color: hsl(72, 60%, 75%); text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+      40% { color: hsl(144, 60%, 75%); text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+      60% { color: hsl(216, 60%, 75%); text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+      80% { color: hsl(288, 60%, 75%); text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+      100% { color: hsl(360, 60%, 75%); text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+    }
+    .hof-card.rainbow { animation: smoothRainbow 5s linear infinite; }
+    .hof-name.rainbow { animation: smoothText 5s linear infinite; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -530,13 +551,13 @@
 
         sortedWinners.forEach(([uname, info]) => {
             const card = document.createElement('div');
-            card.className = 'hof-card';
+            card.className = 'hof-card rainbow';
             
             const header = document.createElement('div');
             header.className = 'hof-header';
             
             const nameSpan = document.createElement('span');
-            nameSpan.className = 'hof-name';
+            nameSpan.className = 'hof-name rainbow';
             nameSpan.textContent = uname; 
 
             const scoreSpan = document.createElement('span');
@@ -589,6 +610,14 @@
         console.error("SUPABASE REJECTED IT:", error); 
       }
     }
+
+    window.rainbowHue = 0;
+    setInterval(() => {
+        window.rainbowHue = (window.rainbowHue + 1) % 360;
+        if (performanceChart && performanceChart.tooltip && performanceChart.tooltip.opacity > 0) {
+            performanceChart.draw();
+        }
+    }, 50);
 
     async function initChart() {
       const { data } = await _db.from('typing_scores').select('wpm, username, is_beat_daniel, created_at');
@@ -647,6 +676,7 @@
           responsive: true, 
           maintainAspectRatio: false,
           interaction: { mode: 'index', intersect: false },
+          layout: { padding: { top: 80, left: 50, right: 40, bottom: 20 } },
           scales: {
             x: { 
               type: 'linear', min: 0, max: 100,
@@ -657,6 +687,7 @@
             y: { 
               beginAtZero: true, 
               min: 0, 
+              grace: '40%',
               title: { display: true, text: 'Speed (WPM)', color: '#888', font: { family: 'JetBrains Mono', size: 12 } },
               grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
               ticks: { color: '#555', font: { family: 'JetBrains Mono' } }
@@ -684,7 +715,10 @@
                 titleFont: { family: 'JetBrains Mono', size: 14, weight: 'bold' },
                 titleColor: (context) => {
                     const user = context.tooltip.dataPoints?.[0]?.raw?.user;
-                    return user === 'f1zzy22' ? '#ffd700' : '#00ff41'; 
+                    const y = context.tooltip.dataPoints?.[0]?.raw?.y;
+                    if (user === 'f1zzy22') return '#ffd700';
+                    if (y > myWPM) return `hsl(${window.rainbowHue}, 60%, 75%)`;
+                    return '#00ff41'; 
                 },
                 bodyFont: { family: 'JetBrains Mono', size: 13 },
                 bodyColor: '#e0e0e0',
