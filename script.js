@@ -74,7 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let matrixInterval; 
 
     function startMatrixRain() {
-        if (!overlay) return;
+        const currentOverlay = document.getElementById('terminal-overlay');
+        if (!currentOverlay) return;
         if (matrixInterval) clearInterval(matrixInterval); 
 
         let matrixCanvas = document.getElementById('matrix-canvas');
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             matrixCanvas.style.height = '100%';
             matrixCanvas.style.zIndex = '0'; 
             matrixCanvas.style.pointerEvents = 'none';
-            overlay.prepend(matrixCanvas);
+            currentOverlay.prepend(matrixCanvas);
         }
 
         const ctx = matrixCanvas.getContext('2d');
@@ -145,7 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function runTerminal() {
         const terminalWindow = document.querySelector('.terminal-window');
-        if (!terminalWindow || !terminalContent) return;
+        if (!terminalWindow || !terminalContent || typeof gsap === 'undefined') {
+            document.body.classList.remove('loading');
+            return;
+        }
 
         await gsap.to(terminalWindow, {
             scale: 1,
@@ -358,12 +362,46 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(countdownInterval);
         if(malwareOverlay) malwareOverlay.classList.remove('active');
         document.body.classList.add('loading');
-        const terminalWindow = document.querySelector('.terminal-window');
-        gsap.killTweensOf([terminalWindow, overlay]);
-        gsap.set(overlay, { display: 'flex', opacity: 1 });
-        gsap.set(terminalWindow, { scale: 1, x: "0vw", y: "0vh", rotation: 0, opacity: 1 });
+        
+        let existingOverlay = document.getElementById('terminal-overlay');
+        let terminalWindow = document.querySelector('.terminal-window');
+        let termContent = document.getElementById('terminal-content');
 
-        terminalContent.innerHTML = `
+        // If the page doesn't have the terminal HTML built-in, we create it dynamically!
+        if (!existingOverlay || !terminalWindow || !termContent) {
+            existingOverlay = document.createElement('div');
+            existingOverlay.id = 'terminal-overlay';
+            existingOverlay.className = 'terminal-overlay';
+            existingOverlay.style.display = 'flex';
+            existingOverlay.style.opacity = '1';
+            existingOverlay.innerHTML = `
+                <div class="terminal-window" style="transform: scale(1); opacity: 1;">
+                    <div class="terminal-header">
+                        <div class="terminal-btn red"></div>
+                        <div class="terminal-btn yellow"></div>
+                        <div class="terminal-btn green"></div>
+                    </div>
+                    <div class="terminal-body" id="terminal-content"></div>
+                </div>
+            `;
+            document.body.appendChild(existingOverlay);
+            terminalWindow = existingOverlay.querySelector('.terminal-window');
+            termContent = existingOverlay.querySelector('#terminal-content');
+        }
+
+        // If GSAP is loaded, use it. Otherwise, force the styles manually.
+        if (typeof gsap !== 'undefined') {
+            gsap.killTweensOf([terminalWindow, existingOverlay]);
+            gsap.set(existingOverlay, { display: 'flex', opacity: 1 });
+            gsap.set(terminalWindow, { scale: 1, x: "0vw", y: "0vh", rotation: 0, opacity: 1 });
+        } else {
+            existingOverlay.style.display = 'flex';
+            existingOverlay.style.opacity = '1';
+            terminalWindow.style.transform = 'scale(1)';
+            terminalWindow.style.opacity = '1';
+        }
+
+        termContent.innerHTML = `
             <span class="cmd-user">guest@daniel-han-portfolio</span>:<span class="cmd-path">~</span>$ connection_status<br>
             <span class="cmd-error">Connection closed by remote host.</span><br>
             <span class="cmd-error">Session expired. Idle state detected.</span><br><br>
