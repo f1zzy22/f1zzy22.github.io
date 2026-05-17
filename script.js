@@ -432,16 +432,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (now - lastStarTime < 40) return; // create a star every 40ms
         lastStarTime = now;
 
-        const star = document.createElement("div");
-        star.innerHTML = "★";
+        const star = document.createElement("img");
+        star.src = "/images/f1zzystar.png";
         star.style.position = "fixed";
         star.style.left = (e.clientX - 10) + "px";
         star.style.top = (e.clientY - 10) + "px";
-        star.style.color = "#ff00c1";
-        star.style.fontSize = (Math.random() * 10 + 15) + "px";
+        const size = (Math.random() * 15 + 15) * 3; // Upsized by 300%
+        star.style.width = size + "px";
+        star.style.height = size + "px";
         star.style.pointerEvents = "none";
         star.style.zIndex = "999999";
-        star.style.textShadow = "0 0 5px rgba(255, 0, 193, 0.8)";
         star.style.transition = "transform 0.8s ease-out, opacity 0.8s ease-out";
         document.body.appendChild(star);
 
