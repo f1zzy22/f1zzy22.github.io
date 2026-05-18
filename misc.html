@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Misc | Daniel Han</title>
   <link rel="icon" type="image/png" href="images/f1zzyicon.png">
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
   <style>
-    .misc-container { max-width: 1200px; margin: 0 auto; width: 90%; padding-top: 150px; }
-    
+    .misc-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 90%;
+      padding-top: 150px;
+    }
+
     .module-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -25,7 +33,7 @@
       min-height: 380px;
       position: relative;
       /* CRITICAL: Hides the sharp edges of the diagonal banner */
-      overflow: hidden; 
+      overflow: hidden;
     }
 
     .blog-card:hover .blog-desc {
@@ -49,10 +57,12 @@
       display: flex;
       align-items: center;
     }
+
     .flicker-char::before {
       content: "0x";
       animation: char-cycle 1.5s infinite steps(1);
     }
+
     .blinking-cursor {
       width: 12px;
       height: 24px;
@@ -60,12 +70,27 @@
       margin-left: 5px;
       animation: blink 1s infinite;
     }
+
     @keyframes char-cycle {
-      0% { content: "0xFC"; }
-      20% { content: "108"; }
-      40% { content: "0xBF"; }
-      60% { content: "0x01"; }
-      80% { content: "AA"; }
+      0% {
+        content: "0xFC";
+      }
+
+      20% {
+        content: "108";
+      }
+
+      40% {
+        content: "0xBF";
+      }
+
+      60% {
+        content: "0x01";
+      }
+
+      80% {
+        content: "AA";
+      }
     }
 
     /* 2. Music: Perpetual Wave Visualizer */
@@ -75,6 +100,7 @@
       gap: 4px;
       height: 40px;
     }
+
     .wave-bar {
       width: 5px;
       height: 10px;
@@ -82,13 +108,33 @@
       border-radius: 2px;
       animation: wave-bounce 0.8s infinite alternate ease-in-out;
     }
-    .wave-bar:nth-child(1) { animation-duration: 0.5s; }
-    .wave-bar:nth-child(2) { animation-duration: 0.7s; }
-    .wave-bar:nth-child(3) { animation-duration: 0.4s; }
-    .wave-bar:nth-child(4) { animation-duration: 0.6s; }
+
+    .wave-bar:nth-child(1) {
+      animation-duration: 0.5s;
+    }
+
+    .wave-bar:nth-child(2) {
+      animation-duration: 0.7s;
+    }
+
+    .wave-bar:nth-child(3) {
+      animation-duration: 0.4s;
+    }
+
+    .wave-bar:nth-child(4) {
+      animation-duration: 0.6s;
+    }
+
     @keyframes wave-bounce {
-      from { height: 8px; opacity: 0.4; }
-      to { height: 40px; opacity: 1; }
+      from {
+        height: 8px;
+        opacity: 0.4;
+      }
+
+      to {
+        height: 40px;
+        opacity: 1;
+      }
     }
 
     /* DIAGONAL CORNER RIBBON STYLES */
@@ -109,95 +155,188 @@
       justify-content: center;
       gap: 6px;
       box-shadow: 0 4px 15px rgba(0, 255, 65, 0.4);
-      pointer-events: none; /* Prevents ribbon from interfering with hover states */
+      pointer-events: none;
+      /* Prevents ribbon from interfering with hover states */
     }
-    
+
     .live-dot {
       width: 6px;
       height: 6px;
-      background: #000; /* Dark dot for contrast against green ribbon */
+      background: #000;
+      /* Dark dot for contrast against green ribbon */
       border-radius: 50%;
       animation: pulse-dot-dark 1.5s infinite;
     }
 
     @keyframes pulse-dot-dark {
-      0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7); }
-      70% { box-shadow: 0 0 0 6px rgba(0, 0, 0, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 6px rgba(0, 0, 0, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+      }
     }
 
     /* 3. Poetry: HUMAN SEQUENTIAL WRITER */
     .doodle-canvas {
-        position: relative;
-        width: 120px;
-        height: 80px;
-    }
-    
-    .doodle-line {
-        fill: none;
-        stroke: var(--accent);
-        stroke-width: 1.5;
-        stroke-dasharray: 110; 
-        stroke-dashoffset: 110;
+      position: relative;
+      width: 120px;
+      height: 80px;
     }
 
-    .line-1 { animation: reveal-1 12s infinite linear; }
-    .line-2 { animation: reveal-2 12s infinite linear; }
-    .line-3 { animation: reveal-3 12s infinite linear; }
+    .doodle-line {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 1.5;
+      stroke-dasharray: 110;
+      stroke-dashoffset: 110;
+    }
+
+    .line-1 {
+      animation: reveal-1 12s infinite linear;
+    }
+
+    .line-2 {
+      animation: reveal-2 12s infinite linear;
+    }
+
+    .line-3 {
+      animation: reveal-3 12s infinite linear;
+    }
 
     @keyframes reveal-1 {
-        0%, 5% { stroke-dashoffset: 110; }
-        25%, 95% { stroke-dashoffset: 0; }
-        100% { stroke-dashoffset: 110; }
+
+      0%,
+      5% {
+        stroke-dashoffset: 110;
+      }
+
+      25%,
+      95% {
+        stroke-dashoffset: 0;
+      }
+
+      100% {
+        stroke-dashoffset: 110;
+      }
     }
+
     @keyframes reveal-2 {
-        0%, 33% { stroke-dashoffset: 110; }
-        53%, 95% { stroke-dashoffset: 0; }
-        100% { stroke-dashoffset: 110; }
+
+      0%,
+      33% {
+        stroke-dashoffset: 110;
+      }
+
+      53%,
+      95% {
+        stroke-dashoffset: 0;
+      }
+
+      100% {
+        stroke-dashoffset: 110;
+      }
     }
+
     @keyframes reveal-3 {
-        0%, 66% { stroke-dashoffset: 110; }
-        86%, 95% { stroke-dashoffset: 0; }
-        100% { stroke-dashoffset: 110; }
+
+      0%,
+      66% {
+        stroke-dashoffset: 110;
+      }
+
+      86%,
+      95% {
+        stroke-dashoffset: 0;
+      }
+
+      100% {
+        stroke-dashoffset: 110;
+      }
     }
 
     .pencil-move-group {
-        animation: move-document 12s infinite linear;
+      animation: move-document 12s infinite linear;
     }
 
     .pencil-jitter-group {
-        transform-origin: bottom left; 
-        animation: jitter 0.2s infinite ease-in-out;
+      transform-origin: bottom left;
+      animation: jitter 0.2s infinite ease-in-out;
     }
 
     @keyframes move-document {
-        0%, 5% { transform: translate(10px, 5px); }
-        25% { transform: translate(110px, 5px); }
-        25.1%, 33% { transform: translate(10px, 25px); }
-        53% { transform: translate(110px, 25px); }
-        53.1%, 66% { transform: translate(10px, 45px); }
-        86% { transform: translate(110px, 45px); }
-        95%, 100% { transform: translate(10px, 5px); }
+
+      0%,
+      5% {
+        transform: translate(10px, 5px);
+      }
+
+      25% {
+        transform: translate(110px, 5px);
+      }
+
+      25.1%,
+      33% {
+        transform: translate(10px, 25px);
+      }
+
+      53% {
+        transform: translate(110px, 25px);
+      }
+
+      53.1%,
+      66% {
+        transform: translate(10px, 45px);
+      }
+
+      86% {
+        transform: translate(110px, 45px);
+      }
+
+      95%,
+      100% {
+        transform: translate(10px, 5px);
+      }
     }
-    
+
     @keyframes jitter {
-        0%, 100% { transform: rotate(-15deg); }
-        50% { transform: rotate(-17deg) translate(0.2px, 0.2px); }
+
+      0%,
+      100% {
+        transform: rotate(-15deg);
+      }
+
+      50% {
+        transform: rotate(-17deg) translate(0.2px, 0.2px);
+      }
     }
 
     @media (max-width: 950px) {
-      .module-grid { grid-template-columns: 1fr; }
-      .blog-card { min-height: auto; }
+      .module-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .blog-card {
+        min-height: auto;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="grid-bg"></div>
-  
+
   <nav class="nav">
     <div class="nav-container">
-        <a href="/"><div class="nav-logo nav-glitch" data-text="> Daniel Han">&gt; Daniel Han</div></a>
-              <div class="nav-links">
+      <a href="/">
+        <div class="nav-logo nav-glitch" data-text="> Daniel Han">&gt; Daniel Han</div>
+      </a>
+      <div class="nav-links">
         <a href="/#about" class="hacker-text" data-value="About">About</a>
         <a href="/#experience" class="hacker-text" data-value="Experience">Experience</a>
         <a href="/#education" class="hacker-text" data-value="Education">Education</a>
@@ -211,7 +350,7 @@
   <div class="misc-container">
     <h2 class="section-title hacker-text" data-value="> Miscellaneous">&gt; Miscellaneous</h2>
     <p style="color: var(--text-secondary); max-width: 800px; font-size: 1.1rem;">
-        A collection of my non-professional work. Enjoy!
+      A collection of my non-professional work. Enjoy!
     </p>
 
     <div class="module-grid">
@@ -219,33 +358,36 @@
         <div>
           <div class="icon-container">
             <div class="terminal-prompt">
-                <span>></span><span class="flicker-char" style="margin-left: 8px;"></span><div class="blinking-cursor"></div>
+              <span>></span><span class="flicker-char" style="margin-left: 8px;"></span>
+              <div class="blinking-cursor"></div>
             </div>
           </div>
           <h3 class="blog-title">Fast Fingered?</h3>
-          <p class="blog-desc">A quick typing challenge. Everyone can make the leaderboard, but only a select few earn a spot on the Hall of Fame.</p>
+          <p class="blog-desc">A quick typing challenge. Everyone can make the leaderboard, but only a select few earn a
+            spot on the Hall of Fame.</p>
         </div>
         <div class="read-more">Play Game &gt;</div>
       </a>
 
       <a href="/music" class="blog-card" id="music-card-container">
         <div class="live-ribbon" id="live-music-badge" style="display: none;">
-            <div class="live-dot"></div>
-            LIVE NOW
+          <div class="live-dot"></div>
+          LIVE NOW
         </div>
-        
+
         <div>
           <div class="icon-container">
             <div class="wave-container">
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
             </div>
           </div>
           <h3 class="blog-title">Judge My Music Taste</h3>
-          <p class="blog-desc">A live deep-dive into my Spotify. Feel free to roast my listening habits or message me to make a Spotify Blend!</p>
+          <p class="blog-desc">A live deep-dive into my Spotify. Feel free to roast my listening habits or message me to
+            make a Spotify Blend!</p>
         </div>
         <div class="read-more">View Data &gt;</div>
       </a>
@@ -254,21 +396,22 @@
         <div>
           <div class="icon-container">
             <div class="doodle-canvas">
-                <svg width="120" height="85" viewBox="0 -25 120 85">
-                    <path class="doodle-line line-1" d="M10,5 L30,7 L50,4 L70,6 L90,4 L110,5" />
-                    <path class="doodle-line line-2" d="M10,25 L30,27 L50,24 L70,26 L90,24 L110,25" />
-                    <path class="doodle-line line-3" d="M10,45 L30,47 L50,44 L70,46 L90,44 L110,45" />
-                    
-                    <g class="pencil-move-group">
-                        <g class="pencil-jitter-group">
-                            <text x="0" y="0" font-size="28" fill="var(--accent)" transform="translate(14, 4)">✎</text>
-                        </g>
-                    </g>
-                </svg>
+              <svg width="120" height="85" viewBox="0 -25 120 85">
+                <path class="doodle-line line-1" d="M10,5 L30,7 L50,4 L70,6 L90,4 L110,5" />
+                <path class="doodle-line line-2" d="M10,25 L30,27 L50,24 L70,26 L90,24 L110,25" />
+                <path class="doodle-line line-3" d="M10,45 L30,47 L50,44 L70,46 L90,44 L110,45" />
+
+                <g class="pencil-move-group">
+                  <g class="pencil-jitter-group">
+                    <text x="0" y="0" font-size="28" fill="var(--accent)" transform="translate(14, 4)">✎</text>
+                  </g>
+                </g>
+              </svg>
             </div>
           </div>
           <h3 class="blog-title">Unfiltered Thoughts</h3>
-          <p class="blog-desc">A collection of creative writing and poems I wrote, in my very own handwriting (font).</p>
+          <p class="blog-desc">A collection of personal poems and creative writing in a custom digital font created to
+            look like my own handwriting.</p>
         </div>
         <div class="read-more">Open Archive &gt;</div>
       </a>
@@ -279,45 +422,46 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const API_KEY = '6428cc31e6ba1fb7fa52fc69ff008d05';
-        const USERNAME = 'f1zzy22222';
-        const BASE_URL = `https://ws.audioscrobbler.com/2.0/?user=${USERNAME}&api_key=${API_KEY}&format=json`;
+      const API_KEY = '6428cc31e6ba1fb7fa52fc69ff008d05';
+      const USERNAME = 'f1zzy22222';
+      const BASE_URL = `https://ws.audioscrobbler.com/2.0/?user=${USERNAME}&api_key=${API_KEY}&format=json`;
 
-        async function checkLiveMusic() {
-            try {
-                const res = await fetch(`${BASE_URL}&method=user.getrecenttracks&limit=1`);
-                if (!res.ok) return;
-                
-                const data = await res.json();
-                
-                if (data && data.recenttracks && data.recenttracks.track) {
-                    let tracks = data.recenttracks.track;
-                    if (!Array.isArray(tracks)) tracks = [tracks]; 
-                    
-                    const np = tracks[0];
-                    const isPlaying = np['@attr'] && np['@attr'].nowplaying === 'true';
-                    
-                    const badge = document.getElementById('live-music-badge');
-                    const card = document.getElementById('music-card-container');
-                    
-                    if (isPlaying) {
-                        badge.style.display = 'flex';
-                        const trackName = np.name || 'Unknown Track';
-                        const artistName = (np.artist && np.artist['#text']) ? np.artist['#text'] : 'Unknown Artist';
-                        card.setAttribute('title', `Currently Listening to: ${trackName} by ${artistName}`);
-                    } else {
-                        badge.style.display = 'none';
-                        card.removeAttribute('title');
-                    }
-                }
-            } catch (e) {
-                console.error("Failed to fetch live music status:", e);
+      async function checkLiveMusic() {
+        try {
+          const res = await fetch(`${BASE_URL}&method=user.getrecenttracks&limit=1`);
+          if (!res.ok) return;
+
+          const data = await res.json();
+
+          if (data && data.recenttracks && data.recenttracks.track) {
+            let tracks = data.recenttracks.track;
+            if (!Array.isArray(tracks)) tracks = [tracks];
+
+            const np = tracks[0];
+            const isPlaying = np['@attr'] && np['@attr'].nowplaying === 'true';
+
+            const badge = document.getElementById('live-music-badge');
+            const card = document.getElementById('music-card-container');
+
+            if (isPlaying) {
+              badge.style.display = 'flex';
+              const trackName = np.name || 'Unknown Track';
+              const artistName = (np.artist && np.artist['#text']) ? np.artist['#text'] : 'Unknown Artist';
+              card.setAttribute('title', `Currently Listening to: ${trackName} by ${artistName}`);
+            } else {
+              badge.style.display = 'none';
+              card.removeAttribute('title');
             }
+          }
+        } catch (e) {
+          console.error("Failed to fetch live music status:", e);
         }
+      }
 
-        checkLiveMusic();
-        setInterval(checkLiveMusic, 30000); 
+      checkLiveMusic();
+      setInterval(checkLiveMusic, 30000);
     });
   </script>
 </body>
+
 </html>
