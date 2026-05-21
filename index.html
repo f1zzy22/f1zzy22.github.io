@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,12 @@
   <title>Daniel Han | Portfolio</title>
   <link rel="icon" type="image/png" href="images/f1zzyicon.png">
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script type="module" src="3d-setup.js"></script>
 </head>
+
 <body class="loading">
   <div class="grid-bg"></div>
 
@@ -24,9 +27,11 @@
 
   <nav class="nav">
     <div class="nav-container">
-      <a href="/"><div class="nav-logo nav-glitch" data-text="> Daniel Han">&gt; Daniel Han</div></a>
-      
-            <div class="nav-links">
+      <a href="/">
+        <div class="nav-logo nav-glitch" data-text="> Daniel Han">&gt; Daniel Han</div>
+      </a>
+
+      <div class="nav-links">
         <a href="/#about" class="hacker-text" data-value="About">About</a>
         <a href="/#experience" class="hacker-text" data-value="Experience">Experience</a>
         <a href="/#education" class="hacker-text" data-value="Education">Education</a>
@@ -38,54 +43,71 @@
   </nav>
 
   <section class="hero" id="home">
-    <canvas id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none;"></canvas>    <div id="target-text" style="display:none;">DANIEL HAN</div>
-</section>
-  
-<div id="detonation-container" style="display: none; opacity: 0;">
-    
-  <div class="arrow-cluster">
+    <canvas id="hero-canvas"
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none;"></canvas>
+    <div id="target-text" style="display:none;">DANIEL HAN</div>
+  </section>
+
+  <div id="detonation-container" style="display: none; opacity: 0;">
+
+    <div class="arrow-cluster">
       <div class="arrow-wrap" style="--angle: -85deg;">
-          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+        <svg width="35" height="50" viewBox="0 0 40 60">
+          <path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" />
+        </svg>
       </div>
       <div class="arrow-wrap" style="--angle: -55deg;">
-          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+        <svg width="35" height="50" viewBox="0 0 40 60">
+          <path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" />
+        </svg>
       </div>
       <div class="arrow-wrap" style="--angle: -25deg;">
-          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+        <svg width="35" height="50" viewBox="0 0 40 60">
+          <path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" />
+        </svg>
       </div>
       <div class="arrow-wrap" style="--angle: 0deg;">
-          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+        <svg width="35" height="50" viewBox="0 0 40 60">
+          <path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" />
+        </svg>
       </div>
       <div class="arrow-wrap" style="--angle: 25deg;">
-          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+        <svg width="35" height="50" viewBox="0 0 40 60">
+          <path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" />
+        </svg>
       </div>
       <div class="arrow-wrap" style="--angle: 55deg;">
-          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+        <svg width="35" height="50" viewBox="0 0 40 60">
+          <path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" />
+        </svg>
       </div>
       <div class="arrow-wrap" style="--angle: 85deg;">
-          <svg width="35" height="50" viewBox="0 0 40 60"><path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" /></svg>
+        <svg width="35" height="50" viewBox="0 0 40 60">
+          <path d="M20 60 L40 30 L28 30 L28 0 L12 0 L12 30 L0 30 Z" fill="#cc0000" />
+        </svg>
       </div>
-  </div>
+    </div>
 
-  <div class="button-scene">
+    <div class="button-scene">
       <div class="button-3d-wrapper">
-          <div class="button-base"></div>
-          <button id="detonate-btn" class="button-top">
-              <span>DO NOT<br>PRESS</span>
-          </button>
+        <div class="button-base"></div>
+        <button id="detonate-btn" class="button-top">
+          <span>DO NOT<br>PRESS</span>
+        </button>
       </div>
+    </div>
+
   </div>
 
-</div>
 
 
-
-    <a href="#about" class="scroll-indicator">
-      <span class="scroll-text">Scroll Down</span>
-      <svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-    </a>
+  <a href="#about" class="scroll-indicator">
+    <span class="scroll-text">Scroll Down</span>
+    <svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </a>
   </section>
 
   <section id="about" class="section">
@@ -94,16 +116,19 @@
       <div class="about-content reveal">
         <p class="about-text">
           Hi, I'm Daniel!
-          I'm currently pursuing a BA + MS in Cyber Security Engineering at the University of Southern California, with a minor in Data Science.
+          I'm currently pursuing a BA + MS in Cyber Security Engineering at the University of Southern California, with
+          a minor in Data Science.
           <br><br>
-          I like hacking things ethically, solving problems, and diving deep into security rabbit holes. Between CTF's and teaching cybersecurity to high schoolers, I'm always learning something new.
+          I like hacking things ethically, solving problems, and diving deep into security rabbit holes. Between CTF's
+          and teaching cybersecurity to high schoolers, I'm always learning something new.
           <br><br>
-          Outside of security, you can find me listening to Gracie Abrams, playing pickleball, or rating eats around the city.
+          Outside of security, you can find me listening to Gracie Abrams, playing pickleball, or rating eats around the
+          city.
         </p>
       </div>
     </div>
   </section>
-  
+
   <section id="experience" class="section">
     <div class="container">
       <h2 class="section-title hacker-text reveal" data-value="> experience_timeline">&gt; experience_timeline</h2>
@@ -189,7 +214,7 @@
               <span class="degree-year">Aug 2025 - May 2027</span>
             </div>
             <div class="degree-meta">
-              <span class="meta-item">GPA: -.--</span>
+              <span class="meta-item">GPA: 4.00</span>
             </div>
             <div class="course-list">
               <span class="tag">Innovation for Defense Applications</span>
@@ -263,7 +288,8 @@
       <div class="contact-content">
         <div class="contact-links reveal">
           <a href="mailto:dhan6609@usc.edu" class="contact-link">Email: dhan6609@usc.edu</a>
-          <a href="https://linkedin.com/in/dh-daniel-han" target="_blank" class="contact-link">LinkedIn: dh-daniel-han</a>
+          <a href="https://linkedin.com/in/dh-daniel-han" target="_blank" class="contact-link">LinkedIn:
+            dh-daniel-han</a>
           <a href="https://github.com/f1zzy22" target="_blank" class="contact-link">Github: f1zzy22</a>
         </div>
       </div>
@@ -292,6 +318,7 @@
   </div>
 
 </body>
+
 </html>
 
 <script src="hero-animation.js"></script>
