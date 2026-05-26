@@ -19,7 +19,9 @@ window.startHeroAnimation = () => {
     let crawlStartTime = 0; 
     let isWaving = false;
     
-    // --- OPTIMIZATION 1: DELTA TIME TRACKING ---
+    // --- OPTIMIZATION 1: DYNAMIC PERFORMANCE & DELTA TIME MONITOR ---
+    let frameTimes = [];
+    let lowPowerMode = false;
     let lastFrameTime = Date.now();
     
     window.isCountingDown = false; 
@@ -146,7 +148,7 @@ window.startHeroAnimation = () => {
                 else if (this.y > canvas.height - margin) { this.y = canvas.height - margin; this.vy *= -0.6; this.spin *= -0.5; }
 
                 // Lowered trailing probability to save frame rate
-                if (Math.random() > 0.7 && (Math.abs(this.vx) > 1 || Math.abs(this.vy) > 1)) {
+                if (!lowPowerMode && Math.random() > 0.7 && (Math.abs(this.vx) > 1 || Math.abs(this.vy) > 1)) {
                     splatters.push(new BloodSplatter(this.x, this.y, this.vx * 0.1, this.vy * 0.1, true));
                 }
 
@@ -334,8 +336,8 @@ window.startHeroAnimation = () => {
             ctx.rotate(this.rotation);
             ctx.fillStyle = renderColor;
             
-            // OPTIMIZATION 2: Only apply expensive shadowBlur if completely stopped or waving
-            if (this.stopped || isWaving) {
+            // OPTIMIZATION 2: Only apply expensive shadowBlur if completely stopped or waving and NOT in low power mode
+            if (!lowPowerMode && (this.stopped || isWaving)) {
                 ctx.shadowColor = renderShadow;
                 ctx.shadowBlur = glowFlicker; 
             } else {
@@ -360,7 +362,8 @@ window.startHeroAnimation = () => {
         const startX = (canvas.width - totalWidth) / 2;
         const startY = canvas.height / 2;
 
-        for (let i = 0; i < 45; i++) {
+        const splatterCount = lowPowerMode ? 12 : 45;
+        for (let i = 0; i < splatterCount; i++) {
             const angle = Math.random() * Math.PI * 2;
             const speed = Math.random() * 30 + 10;
             splatters.push(new BloodSplatter(canvas.width / 2, canvas.height / 2, Math.cos(angle) * speed, Math.sin(angle) * speed));
@@ -409,8 +412,14 @@ window.startHeroAnimation = () => {
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.font = 'bold 80px "JetBrains Mono"';
         ctx.fillStyle = "#00ff41"; 
-        ctx.shadowColor = "#00ff41";
-        ctx.shadowBlur = 10 + Math.sin(Date.now() / 400) * 5; 
+        
+        if (!lowPowerMode) {
+            ctx.shadowColor = "#00ff41";
+            ctx.shadowBlur = 10 + Math.sin(Date.now() / 400) * 5; 
+        } else {
+            ctx.shadowBlur = 0;
+        }
+        
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(name, 0, 0);
@@ -452,6 +461,20 @@ window.startHeroAnimation = () => {
         const now = Date.now();
         const dt = (now - lastFrameTime) / 1000;
         lastFrameTime = now;
+
+        // Dynamic performance monitoring (e.g. for low battery/low power mode throttling)
+        if (!lowPowerMode) {
+            frameTimes.push(dt);
+            if (frameTimes.length > 25) {
+                frameTimes.shift();
+                // If more than 35% of recent frames take > 28ms (~35 FPS)
+                const slowFrames = frameTimes.filter(t => t > 0.028).length;
+                if (slowFrames > 8) {
+                    lowPowerMode = true;
+                    console.log("[Performance Monitor] Frame rate dropped or device throttled. Activating high-performance/low-power mode.");
+                }
+            }
+        }
 
         const cycleTime = Date.now() % 17000;
         let newPhase = 0;
@@ -507,7 +530,8 @@ window.startHeroAnimation = () => {
                 head.vx = -Math.abs(Math.random() * 5 + 4); 
                 head.spin = (Math.random() - 0.5) * 0.8;
                 
-                for(let i = 0; i < 25; i++) {
+                const popSplatters = lowPowerMode ? 8 : 25;
+                for(let i = 0; i < popSplatters; i++) {
                     splatters.push(new BloodSplatter(head.targetX, head.targetY, (Math.random()-0.5)*15, Math.random()*-15));
                 }
             }
@@ -565,9 +589,10 @@ window.startHeroAnimation = () => {
             drawPulsingName();
         } else {
             
-            // OPTIMIZATION 4: Keep blood on the floor, but hard-cap the array to 200 items to prevent GPU memory leak
+            // OPTIMIZATION 4: Keep blood on the floor, but hard-cap the array to prevent GPU memory leak
             splatters = splatters.filter(s => s.alpha > 0);
-            if (splatters.length > 200) splatters.splice(0, splatters.length - 200);
+            const maxSplatters = lowPowerMode ? 40 : 200;
+            if (splatters.length > maxSplatters) splatters.splice(0, splatters.length - maxSplatters);
 
             splatters.forEach(s => {
                 s.update(allLettersStopped);
