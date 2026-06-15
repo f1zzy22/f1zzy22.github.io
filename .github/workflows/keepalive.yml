@@ -11,4 +11,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Supabase to prevent project pause
-        run: curl -s -o /dev/null -w "Status Code: %{http_code}\n" --retry 5 --retry-delay 5 --retry-all-errors "https://vefnwnxghpcgajiurufx.supabase.co/rest/v1/typing_scores?select=wpm&limit=1" -H "apikey: sb_publishable_hcvPkj-rK8vtA1hI1TZF4g_pufYZQLk" -H "Authorization: Bearer sb_publishable_hcvPkj-rK8vtA1hI1TZF4g_pufYZQLk"
+        run: |
+          curl -s -o /dev/null -w "Status Code: %{http_code}\n" --retry 5 --retry-delay 5 --retry-all-errors "https://vefnwnxghpcgajiurufx.supabase.co/rest/v1/typing_scores?select=wpm&limit=1" -H "apikey: sb_publishable_hcvPkj-rK8vtA1hI1TZF4g_pufYZQLk" -H "Authorization: Bearer sb_publishable_hcvPkj-rK8vtA1hI1TZF4g_pufYZQLk"
