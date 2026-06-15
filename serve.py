@@ -19,7 +19,7 @@ class GitHubPagesHandler(http.server.SimpleHTTPRequestHandler):
 # Allow address reuse so it doesn't crash on restarts
 socketserver.TCPServer.allow_reuse_address = True
 
-with socketserver.TCPServer(("", PORT), GitHubPagesHandler) as httpd:
+with socketserver.TCPServer(("127.0.0.1", PORT), GitHubPagesHandler) as httpd:
     print(f"Custom Local Server running at http://localhost:{PORT}")
     print("This server perfectly mimics GitHub Pages clean URLs!")
     httpd.serve_forever()
