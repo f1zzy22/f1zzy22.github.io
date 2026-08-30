@@ -103,7 +103,12 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from "http
     });
     let payload = {};
     try { payload = await response.json(); } catch (_) { /* generic failure below */ }
-    if (!response.ok) throw new Error(payload.error || "The request could not be completed.");
+    if (!response.ok) {
+      const error = new Error(payload.error || "The request could not be completed.");
+      error.source = "api";
+      error.status = response.status;
+      throw error;
+    }
     return payload;
   }
 
@@ -148,6 +153,9 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from "http
       isTokenAutoRefreshEnabled: true
     });
     state.firebaseAuth = getAuth(firebaseApp);
+    // Firebase's documented test mode accepts only fictional numbers that are
+    // explicitly registered in the console. Never enable this for production.
+    if (config.pilotMode) state.firebaseAuth.settings.appVerificationDisabledForTesting = true;
     state.firebaseAuth.useDeviceLanguage();
     state.firebaseRecaptcha = new RecaptchaVerifier(state.firebaseAuth, "send-code-button", { size: "invisible" });
   }
@@ -247,6 +255,13 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from "http
       setNotice("Verification code sent. It expires in 10 minutes.", "ok");
       document.getElementById("verification-code").focus();
     } catch (error) {
+      if (error && error.source === "api") {
+        setNotice(config.pilotMode
+          ? `Pilot API error: ${error.message}`
+          : "Unable to begin verification. Please try again later.", "error");
+        if (window.turnstile && state.turnstileWidgetId !== null) window.turnstile.reset(state.turnstileWidgetId);
+        return;
+      }
       const firebaseCode = error && typeof error.code === "string" ? error.code : "unknown";
       if (config.pilotMode) console.error("pilot_phone_auth_failed", firebaseCode, error);
       setNotice(config.pilotMode
