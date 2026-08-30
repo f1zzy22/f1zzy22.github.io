@@ -1,10 +1,13 @@
 // Public configuration only. Firebase web configuration is intentionally public.
 // Never place Worker secrets, encryption keys, HMAC keys,
 // answer or private contest material in this file.
+const jellybeanPilotMode = new URLSearchParams(window.location.search).get("pilot") === "1";
+
 window.JELLYBEAN_CONFIG = Object.freeze({
   apiBase: "https://jellybean-contest-api.jellybean-contest-worker.workers.dev",
   turnstileSiteKey: "0x4AAAAAAEiKLaH1vEBRdsq_",
-  contestId: "jellybeans-v1",
+  contestId: jellybeanPilotMode ? "jellybeans-pilot" : "jellybeans-v1",
+  pilotMode: jellybeanPilotMode,
   firebase: Object.freeze({
     apiKey: "AIzaSyADaBCN6Cyg5MXEccAXtw2GSeX-hCWZaVo",
     authDomain: "composite-sun-507106-d9.firebaseapp.com",

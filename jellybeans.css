@@ -20,6 +20,18 @@
   padding: 8rem 0 5rem;
 }
 
+.pilot-banner {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #ffd166;
+  background: rgba(255, 209, 102, 0.1);
+  color: #ffe29a;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .contest-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(340px, 0.8fr);

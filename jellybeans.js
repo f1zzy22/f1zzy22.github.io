@@ -34,6 +34,11 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from "http
     placeholder: document.getElementById("jar-placeholder")
   };
 
+  if (config.pilotMode) {
+    document.title = "Jellybean Pilot | Daniel Han";
+    document.getElementById("pilot-banner").hidden = false;
+  }
+
   function apiUrl(path) {
     return String(config.apiBase || "").replace(/\/$/, "") + path;
   }
@@ -193,7 +198,9 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from "http
         lockEntry(contest.status === "closed" || contest.status === "revealed" ? "Submissions are closed." : "Submissions are not open yet.");
         return;
       }
-      setNotice("Verify a U.S. phone number to unlock your one guess.", "ok");
+      setNotice(config.pilotMode
+        ? "Pilot is open. Use only a configured Firebase test number."
+        : "Verify a U.S. phone number to unlock your one guess.", "ok");
       loadTurnstile();
       initializeFirebase();
     } catch (_) {
