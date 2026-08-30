@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guess the number of jellybeans in a virtual jar and test the wisdom of the crowd.">
+  <title>The Jellybean Protocol | Daniel Han</title>
+  <link rel="icon" type="image/png" href="images/f1zzyicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="jellybeans.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="contest-page">
+  <div class="grid-bg"></div>
+
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/"><div class="nav-logo nav-glitch" data-text="> Daniel Han">&gt; Daniel Han</div></a>
+      <div class="nav-links">
+        <a href="/blog">Blog</a>
+        <a href="/jellybeans-rules">Rules + Privacy</a>
+        <a href="/#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="contest-shell">
+    <header class="contest-hero">
+      <p class="eyebrow">EXPERIMENT_001 // CROWD INTELLIGENCE</p>
+      <h1>How many jellybeans<br><span>are in the machine?</span></h1>
+      <p class="hero-copy">Study the virtual jar. Commit one guess. When the clock reaches zero, we find out whether the crowd was wiser than any one of us.</p>
+
+      <div class="contest-metrics" aria-label="Contest summary">
+        <div><span class="metric-label">PRIZE</span><strong>$100</strong></div>
+        <div><span class="metric-label">ENTRIES</span><strong id="entry-count">-- / 5,000</strong></div>
+        <div><span class="metric-label">STATUS</span><strong id="contest-status">SETUP</strong></div>
+        <div><span class="metric-label">TIME LEFT</span><strong id="time-left">--:--:--</strong></div>
+      </div>
+    </header>
+
+    <section class="experiment-grid" aria-label="Jellybean guessing experiment">
+      <div class="jar-panel">
+        <div class="panel-heading">
+          <span>VISUAL_FEED</span>
+          <span id="feed-state" class="status-dot">OFFLINE</span>
+        </div>
+
+        <div class="media-stage" id="media-stage">
+          <video id="jar-video" loop muted playsinline controls preload="metadata" poster="media/jellybeans/poster.webp" hidden>
+            <source src="media/jellybeans/turntable.webm" type="video/webm">
+            <source src="media/jellybeans/turntable.mp4" type="video/mp4">
+          </video>
+
+          <div class="jar-placeholder" id="jar-placeholder" role="img" aria-label="Production virtual jellybean jar render is not yet available">
+            <div class="placeholder-glow"></div>
+            <div class="css-jar">
+              <div class="css-lid"></div>
+              <div class="css-glass">
+                <div class="bean-field" aria-hidden="true"></div>
+              </div>
+            </div>
+            <p>PRODUCTION_RENDER_PENDING</p>
+          </div>
+        </div>
+
+        <div class="feed-notes">
+          <span>360° PRE-RENDERED FEED</span>
+          <span>PAUSE + SCRUB ENABLED</span>
+          <span>NO LIVE STATISTICS</span>
+        </div>
+        <div id="still-views" class="still-views" hidden>
+          Accessible fixed views:
+          <a href="media/jellybeans/front.webp">front</a>
+          <a href="media/jellybeans/side.webp">side</a>
+          <a href="media/jellybeans/top.webp">top</a>
+        </div>
+
+        <details class="commitment-box">
+          <summary>Verify the sealed answer</summary>
+          <p>The true count was committed before entries opened. After closing, the count and nonce will be published so anyone can reproduce this SHA-256 hash.</p>
+          <code id="commitment-hash">Commitment unavailable during setup.</code>
+        </details>
+      </div>
+
+      <aside class="entry-panel" aria-labelledby="entry-title">
+        <div class="panel-heading">
+          <span id="entry-title">SUBMIT_GUESS</span>
+          <span>ONE ATTEMPT</span>
+        </div>
+
+        <div id="notice" class="form-notice" role="status" aria-live="polite">The experiment is being assembled. Entry will unlock when the contest opens.</div>
+
+        <form id="phone-form" class="contest-form" novalidate>
+          <div class="step-label"><span>01</span> Verify eligibility</div>
+          <label class="check-row">
+            <input type="checkbox" id="residency-confirmed" required>
+            <span>I live in one of the 50 states or D.C.</span>
+          </label>
+          <label class="check-row">
+            <input type="checkbox" id="age-confirmed" required>
+            <span>I am at least 18 years old.</span>
+          </label>
+          <label for="phone">U.S. phone number</label>
+          <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(555) 555-0123" required>
+          <div id="turnstile-container" class="turnstile-slot" aria-label="Bot verification"></div>
+          <button type="submit" id="send-code-button" class="contest-button">SEND_VERIFICATION_CODE</button>
+          <p class="field-help">Firebase processes the number for verification and abuse prevention. No marketing. Standard message rates may apply.</p>
+        </form>
+
+        <form id="code-form" class="contest-form" hidden novalidate>
+          <div class="step-label"><span>02</span> Enter SMS code</div>
+          <label for="verification-code">Six-digit verification code</label>
+          <input id="verification-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" required>
+          <button type="submit" class="contest-button">VERIFY_CODE</button>
+          <button type="button" id="restart-verification" class="text-button">Use a different number</button>
+        </form>
+
+        <form id="guess-form" class="contest-form" hidden novalidate>
+          <div class="step-label"><span>03</span> Commit your guess</div>
+          <label for="guess">Whole number from 1 to 1,000,000</label>
+          <input id="guess" name="guess" type="number" inputmode="numeric" min="1" max="1000000" step="1" placeholder="Your one and only guess" required>
+          <div class="final-warning">This cannot be edited after submission.</div>
+          <button type="submit" class="contest-button danger">LOCK_IN_GUESS</button>
+        </form>
+
+        <div id="success-state" class="success-state" hidden>
+          <span class="success-mark">✓</span>
+          <h2>Guess committed.</h2>
+          <p>Your entry is sealed. Return after the deadline for the answer, crowd estimate, anonymized data, and technical write-up.</p>
+        </div>
+
+        <div id="results-state" class="results-state" hidden>
+          <div class="step-label"><span>04</span> Experiment revealed</div>
+          <div class="answer-display"><span>TRUE COUNT</span><strong id="result-answer">--</strong></div>
+          <dl class="result-stats">
+            <div><dt>Crowd median</dt><dd id="result-median">--</dd></div>
+            <div><dt>Crowd mean</dt><dd id="result-mean">--</dd></div>
+            <div><dt>10% trimmed mean</dt><dd id="result-trimmed">--</dd></div>
+          </dl>
+          <p id="result-verification" class="verification-result">Checking answer commitment…</p>
+          <a class="contest-button results-link" href="/blog">READ_THE_FULL_WRITEUP</a>
+        </div>
+
+        <p class="rules-link">By entering, you agree to the <a href="/jellybeans-rules">short rules and privacy notice</a>.</p>
+      </aside>
+    </section>
+
+    <section class="method-strip" aria-labelledby="method-title">
+      <div>
+        <p class="eyebrow">THE_PROTOCOL</p>
+        <h2 id="method-title">One image. One person. One guess.</h2>
+      </div>
+      <ol>
+        <li><span>01</span><p>Study the same rendered evidence as everyone else.</p></li>
+        <li><span>02</span><p>Verify one U.S. phone number and submit once.</p></li>
+        <li><span>03</span><p>Compare the crowd median with the sealed answer.</p></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="container"><p>&copy; 2026 Daniel Han. Experiment not yet open.</p></div></footer>
+
+  <script src="jellybeans-config.js"></script>
+  <script type="module" src="jellybeans.js"></script>
+</body>
+</html>

@@ -1,3 +1,54 @@
 .DS_Store
 **/.DS_Store
 backup/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.dev.vars
+worker/.wrangler/
+.wrangler/
+.firebase/
+.cf-turnstile-token
+secrets/
+**/secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+**/firebase-adminsdk*.json
+**/service-account*.json
+**/google-credentials*.json
+*.cpuprofile
+
+# Private contest material (never commit before reveal)
+private/
+**/private/
+# Internal implementation, experiment design, and post-contest publication
+# material. Remove these rules only after submissions close and a fresh secret
+# scan passes.
+docs/
+tools/
+tests/
+worker/
+*.blend
+*.blend1
+**/answer*.json
+**/nonce*.txt
+**/canary*.txt
+**/contest-secrets*.json
+
+# Databases, exports, logs, caches, and generated output
+*.sqlite
+*.sqlite3
+*.db
+exports/
+logs/
+coverage/
+.cache/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+worker/test-results/
