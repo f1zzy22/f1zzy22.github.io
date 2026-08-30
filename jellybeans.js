@@ -247,7 +247,11 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from "http
       setNotice("Verification code sent. It expires in 10 minutes.", "ok");
       document.getElementById("verification-code").focus();
     } catch (error) {
-      setNotice("Unable to send a verification code. Check the number and try again.", "error");
+      const firebaseCode = error && typeof error.code === "string" ? error.code : "unknown";
+      if (config.pilotMode) console.error("pilot_phone_auth_failed", firebaseCode, error);
+      setNotice(config.pilotMode
+        ? `Firebase pilot error: ${firebaseCode}`
+        : "Unable to send a verification code. Check the number and try again.", "error");
       if (window.turnstile && state.turnstileWidgetId !== null) window.turnstile.reset(state.turnstileWidgetId);
       await resetFirebaseRecaptcha();
     } finally { setBusy(elements.phoneForm, false); }
