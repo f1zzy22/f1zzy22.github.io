@@ -732,10 +732,13 @@
             const artistsData = await fetchAPI('user.gettopartists', `&limit=6&period=${period}`);
             if (artistsData && artistsData.topartists && artistsData.topartists.artist) {
                 const artists = Array.isArray(artistsData.topartists.artist) ? artistsData.topartists.artist : [artistsData.topartists.artist];
+                // Keep lower-play artists visible when one artist dominates the period.
+                // Tooltips still report the actual Last.fm play counts.
+                const artistPlayCounts = artists.map(a => parseInt(a.playcount || 0));
                 if (radarChartInstance) radarChartInstance.destroy();
                 radarChartInstance = new Chart(document.getElementById('artistRadarChart').getContext('2d'), {
                     type: 'polarArea',
-                    data: { labels: artists.map(a => a.name), datasets: [{ data: artists.map(a => parseInt(a.playcount)), backgroundColor: ['rgba(0, 255, 65, 0.6)', 'rgba(0, 212, 255, 0.6)', 'rgba(255, 0, 193, 0.6)', 'rgba(255, 215, 0, 0.6)', 'rgba(255, 77, 77, 0.6)', 'rgba(153, 51, 255, 0.6)'], borderColor: 'rgba(20,20,20,1)', borderWidth: 2 }] },
+                    data: { labels: artists.map(a => a.name), datasets: [{ data: artistPlayCounts.map(count => Math.sqrt(count)), backgroundColor: ['rgba(0, 255, 65, 0.6)', 'rgba(0, 212, 255, 0.6)', 'rgba(255, 0, 193, 0.6)', 'rgba(255, 215, 0, 0.6)', 'rgba(255, 77, 77, 0.6)', 'rgba(153, 51, 255, 0.6)'], borderColor: 'rgba(20,20,20,1)', borderWidth: 2 }] },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
@@ -744,7 +747,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function (context) {
-                                        return ` ${context.raw} plays`;
+                                        return ` ${artists[context.dataIndex].name}: ${artistPlayCounts[context.dataIndex]} plays`;
                                     }
                                 }
                             }
